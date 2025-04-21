@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:libro_admin/bloc/bloc/users_bloc.dart';
-import 'package:libro_admin/bloc/bloc/users_state.dart';
+import 'package:gap/gap.dart';
+import 'package:libro_admin/bloc/user/users_bloc.dart';
+import 'package:libro_admin/bloc/user/users_state.dart';
+import 'package:libro_admin/screens/fonts.dart';
+import 'package:libro_admin/widgets/search_bar.dart';
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
@@ -26,11 +29,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   // }
 
   Map<String, dynamic>? selectedUser;
+  String _selectedFilter = 'All';
+  final List<String> _filters = ['All', 'Borrowed', 'Blocked'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            backgroundColor: const Color.fromARGB(255, 243, 229, 214),
+      backgroundColor: AppColors.color60,
       body: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
           if (state is UserLoading) {
@@ -40,8 +45,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           } else if (state is UserLoaded) {
             return Row(
               children: [
-                Expanded(flex: 4, child: _buildMainContent(context, state)),
-                SizedBox(width: 400, child: _buildUserDetail(state)),
+                Expanded(flex: 4, child: _buildMainContent(state)),
+                SizedBox(width: 400, child: _buildUserDetail()),
               ],
             );
           }
@@ -51,36 +56,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  Widget _buildMainContent(BuildContext context, UserLoaded state) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      padding: const EdgeInsets.all(16),
+  Widget _buildMainContent(UserLoaded state) {
+    return Padding(
+      padding: EdgeInsets.all(1),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            height: 50,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE8E8E8),
-              borderRadius: BorderRadius.circular(25),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            margin: const EdgeInsets.only(bottom: 20),
-            child: Row(
-              children: [
-                const Icon(Icons.search, color: Colors.grey),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      hintText: 'Search...',
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          CustomSearchBar(),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,23 +100,60 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Row(
-              children: [
-                _buildFilterChip('All'),
-                const SizedBox(width: 10),
-                _buildFilterChip('Blocked'),
-                const SizedBox(width: 10),
-                _buildFilterChip('Platinum'),
-              ],
+              children:
+                  _filters.map((filter) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _selectedFilter = filter;
+                          });
+                        },
+                        child: Column(
+                          children: [
+                            Text(
+                              filter,
+                              style: TextStyle(
+                                fontWeight:
+                                    _selectedFilter == filter
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            if (_selectedFilter == filter)
+                              Container(
+                                height: 2,
+                                width: 24,
+                                color: Colors.black,
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
             ),
           ),
           const Divider(),
+
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Row(
               children: [
-                _buildTableHeader('Name', flex: 2),
-                _buildTableHeader('ID'),
-                _buildTableHeader('Email', flex: 2),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Gap(50),
+                      Text(
+                        'Name',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                _buildTableHeader('ID', flex: 2),
+                _buildTableHeader('Email'),
                 _buildTableHeader('Place'),
                 _buildTableHeader('M.type'),
                 _buildTableHeader('Status'),
@@ -173,10 +192,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     decoration: BoxDecoration(
                       color:
                           isSelected
-                              ? Color.fromARGB(255, 244, 173, 79)
+                              ? AppColors.color10
                               : (index % 2 == 0
                                   ? Colors.white
-                                  : const Color(0xFFF8E8C8)),
+                                  : AppColors.color60),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Padding(
@@ -184,7 +203,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       child: Row(
                         children: [
                           Expanded(
-                            flex: 2,
                             child: Row(
                               children: [
                                 const SizedBox(width: 8),
@@ -202,8 +220,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                               ],
                             ),
                           ),
-                          Expanded(child: Text(user['uid'])),
-                          Expanded(flex: 2, child: Text(user['email'])),
+                          Expanded(flex: 2, child: Text(user['uid'])),
+                          Expanded(child: Text(user['email'])),
                           Expanded(child: Text(user['address'])),
                           Expanded(child: Text(user['phoneNumber'])),
                           Expanded(
@@ -235,14 +253,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  Widget _buildUserDetail(UserLoaded state) {
+  Widget _buildUserDetail() {
     final user = selectedUser;
-
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF8E8C8),
+        color: AppColors.color30,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.black26),
+        border: Border.all(),
       ),
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(20),

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:libro_admin/bloc/bloc/users_event.dart';
-import 'package:libro_admin/bloc/bloc/users_state.dart';
+import 'package:libro_admin/bloc/user/users_event.dart';
+import 'package:libro_admin/bloc/user/users_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   final CollectionReference usersRef = FirebaseFirestore.instance.collection('users');
@@ -24,9 +24,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 }
 
+
  
   void _onSelectUser (SelectUser  event, Emitter<UserState> emit) {
-  if (state is UserLoaded && event.user != null) {
+  if (state is UserLoaded) {
     final current = state as UserLoaded;
     emit(UserLoaded(current.users, selectedUser : event.user));
   }

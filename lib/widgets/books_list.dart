@@ -35,7 +35,7 @@ class BooksList extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                   Book(image: images[index],color: colors[index],),
+                   BookWidget(),
                     Gap(5),
                     SizedBox(
                       width: 80,
