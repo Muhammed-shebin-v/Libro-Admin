@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 class BookWidget extends StatelessWidget {
-  // final String image;
-  // final Color color;
   const BookWidget({super.key});
 
   @override

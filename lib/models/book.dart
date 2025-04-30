@@ -7,6 +7,7 @@ class Book {
   final String pages;
   final String stocks;
   final String location;
+  final String imgUrl;
 
   Book({
     required this.bookName,
@@ -17,9 +18,9 @@ class Book {
     required this.pages,
     required this.stocks,
     required this.location,
+    required this.imgUrl
   });
 
-  // Factory method to create a Book object from a map
   factory Book.fromMap(Map<String, dynamic> data) {
     return Book(
       bookName: data['bookname'] ?? '',
@@ -30,10 +31,10 @@ class Book {
       pages: data['pages'] ?? 0,
       stocks: data['stocks'] ?? 0,
       location: data['location'] ?? '',
+      imgUrl: data['imgUrl']
     );
   }
 
-  // Method to convert a Book object to a map
   Map<String, dynamic> toMap() {
     return {
       'bookname': bookName,
@@ -44,6 +45,7 @@ class Book {
       'pages': pages,
       'stocks': stocks,
       'location': location,
+      'imgUrl':imgUrl
     };
   }
 }

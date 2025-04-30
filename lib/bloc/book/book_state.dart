@@ -1,17 +1,32 @@
-abstract class BookState {}
+abstract class BookState {
+    const BookState();
+}
 
 class BookInitial extends BookState {}
 
-class BookLoading extends BookState {}
+class BookLoading extends BookState {
+  const BookLoading();
+}
 
 class BookLoaded extends BookState {
   final List<Map<String, dynamic>> books;
   final Map<String, dynamic>? selectedBook;
-
-  BookLoaded(this.books, {this.selectedBook});
+  
+  const BookLoaded(this.books, {this.selectedBook});
+  
+  // Create a copy of the current state with a new selected book
+  BookLoaded copyWith({
+    List<Map<String, dynamic>>? books,
+    Map<String, dynamic>? selectedBook,
+  }) {
+    return BookLoaded(
+      books ?? this.books,
+      selectedBook: selectedBook ?? this.selectedBook,
+    );
+  }
 }
 
 class BookError extends BookState {
   final String message;
-  BookError(this.message);
+  const BookError(this.message);
 }

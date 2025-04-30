@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:libro_admin/bloc/user/users_bloc.dart';
 import 'package:libro_admin/bloc/user/users_state.dart';
-import 'package:libro_admin/screens/fonts.dart';
+import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
 
 class UserManagementScreen extends StatefulWidget {
@@ -301,7 +301,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: AssetImage('IMG_0899.JPG'),
+                              image: AssetImage('lib/assets/IMG_0899.JPG'),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -324,7 +324,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Contact buttons
+                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -350,7 +350,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
                   const SizedBox(height: 20),
 
-                  // User information sections
+                  
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -416,16 +416,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  Widget _buildFilterChip(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black26),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(label),
-    );
-  }
+  
 
   Widget _buildInfoSection(String title, List<InfoItem> items) {
     return Column(

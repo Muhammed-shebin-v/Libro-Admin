@@ -5,8 +5,7 @@ import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/user/users_bloc.dart';
 import 'package:libro_admin/bloc/user/users_event.dart';
-import 'package:libro_admin/gpt/gpt1.dart';
-import 'package:libro_admin/screens/side_bar.dart';
+import 'package:libro_admin/screens/splash_screen.dart';
 import 'package:libro_admin/widgets/firebase_options.dart';
 
 void main() async {
@@ -18,7 +17,7 @@ void main() async {
         create: (context) => UserBloc()..add(FetchUsers()),
       ),
       BlocProvider(
-        create: (context) => BookBloc()..add(FetchBooks()),
+        create: (context) => BookBloc()..add(LoadBooks()),
       ),
     ],
     child: LibroAdmin()));
@@ -31,9 +30,8 @@ class LibroAdmin extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: 
-      LibroWebLayout(currentScreen: 'Dashboard', 
-      child: UserManagementScreen()),
+      home: SplashScreen()
+     
     );
   }
 }

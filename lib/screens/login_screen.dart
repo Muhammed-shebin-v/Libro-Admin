@@ -1,14 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:libro_admin/screens/home_screen.dart';
+import 'package:libro_admin/screens/side_bar.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/form.dart';
 import 'package:libro_admin/widgets/long_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  final String predefinedUsername = "LibroAdmin@gmail.com";
+  final String predefinedPassword = "123456789";
+
+  void _login(context) async {
+    if (_emailController.text == predefinedUsername &&
+        _passwordController.text == predefinedPassword) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LibroWebLayout(currentScreen: 'Home', child: HomeScreen()),),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Invalid email or password")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,20 +78,14 @@ class LoginScreen extends StatelessWidget {
                       return null;
                     },
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      'forgot password?',
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 0, 72, 255),
-                      ),
-                    ),
-                  ),
+                  
                   Gap(50),
                   CustomLongButton(
                     title: 'Log in',
                     ontap: () async {
-                      if (_formKey.currentState!.validate()) {}
+                      if (_formKey.currentState!.validate()) {
+                        _login(context);
+                      }
                     },
                   ),
                   Gap(10),

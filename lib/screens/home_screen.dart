@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/books_list.dart';
 
 class HomeScreen extends StatelessWidget {
    HomeScreen({super.key});
 
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: Image(image: AssetImage('lib/assets/IMG_0899.JPG')),
-        actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.qr_code)),
-          IconButton(onPressed: (){}, icon: Icon(Icons.person))
-        ],
-      ),
-       
+      backgroundColor: AppColors.color60,
       body: SafeArea(child: 
       SingleChildScrollView(
         child: Padding(padding: 
@@ -23,7 +18,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
            SizedBox(
-            height: 150,
+            height: 80,
              child: ListView.separated(
               separatorBuilder: (context,index)=>
               Gap(MediaQuery.of(context).size.width * 0.03,),
@@ -36,6 +31,7 @@ class HomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 220, 214, 214),
                     borderRadius: BorderRadius.circular(15),
+                    border: Border.all()
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(10),
@@ -43,14 +39,13 @@ class HomeScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Image(image: AssetImage('lib/assets/IMG_0899.JPG'),height: 100,),
-                            SizedBox(width: 10,),
+                            Image(image: AssetImage('lib/assets/IMG_0899.JPG'),height: 50,),
                             Text('200'),
+                            Text('Total users +2.5')
                           ],
-                        ),
-                        Gap(10)
-,                        Text('Total users +2.5')
+                        ),                     
                       ],
                     ),
                   )

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:libro_admin/gpt/gpt1.dart';
-import 'package:libro_admin/gpt/gpt2.dart';
+import 'package:libro_admin/screens/Users_list.dart';
+import 'package:libro_admin/screens/Books_list.dart';
+import 'package:libro_admin/screens/ad_screen.dart';
 import 'package:libro_admin/screens/add_book.dart';
+import 'package:libro_admin/screens/home_screen.dart';
 import 'package:libro_admin/screens/login_screen.dart';
 import 'package:libro_admin/themes/fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LibroWebLayout extends StatefulWidget {
   final Widget child;
   final String currentScreen;
+ 
 
   const LibroWebLayout({
     super.key,
@@ -21,6 +25,14 @@ class LibroWebLayout extends StatefulWidget {
 
 class _LibroWebLayoutState extends State<LibroWebLayout> {
   bool _isExpanded = true;
+   void _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', false);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
 
   PageRouteBuilder _createPageRoute(Widget page) {
     return PageRouteBuilder(
@@ -45,16 +57,22 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
     Widget nextScreen;
 
     switch (screenName) {
-      case 'Profile':
+      case 'Home':
         nextScreen = LibroWebLayout(
-          currentScreen: 'Profile',
-          child: LoginScreen(),
+          currentScreen: 'Home',
+          child: HomeScreen(),
         );
         break;
-      case 'Dashboard':
+      case 'Users':
         nextScreen = LibroWebLayout(
-          currentScreen: 'Dashboard',
+          currentScreen: 'Users',
           child: UserManagementScreen(),
+        );
+        break;
+         case 'AD':
+        nextScreen = LibroWebLayout(
+          currentScreen: 'AD',
+          child: AdScreen(),
         );
         break;
       case 'Books':
@@ -63,11 +81,8 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
           child: LibraryManagementScreen(),
         );
         break;
-         case 'AddBook':
-        nextScreen = LibroWebLayout(
-          currentScreen: 'AddBook',
-          child: AddBook(),
-        );
+      case 'AddBook':
+        nextScreen = LibroWebLayout(currentScreen: 'AddBook', child: AddBook());
         break;
       default:
         nextScreen = LibroWebLayout(
@@ -80,10 +95,11 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
   }
 
   final List<Map<String, dynamic>> _sidebarItems = [
-    {'title': 'Dashboard', 'icon': Icons.dashboard},
+    {'title': 'Home', 'icon': Icons.home},
+    {'title': 'Users', 'icon': Icons.verified_user},
     {'title': 'Books', 'icon': Icons.book},
-    {'title': 'Profile', 'icon': Icons.person},
-    {'title': 'AddBook','icon':Icons.add}
+    {'title': 'AddBook', 'icon': Icons.add},
+    {'title': 'AD', 'icon': Icons.newspaper},
   ];
 
   @override
@@ -151,7 +167,7 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
                           child: Container(
                             height: 50,
                             color:
-                                isSelected ? Colors.grey : Colors.transparent,
+                                isSelected ? Colors.white : Colors.transparent,
                             padding: const EdgeInsets.symmetric(horizontal: 15),
                             child: Row(
                               children: [
@@ -159,7 +175,7 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
                                   item['icon'],
                                   color:
                                       isSelected
-                                          ? Theme.of(context).primaryColor
+                                          ?  AppColors.color10
                                           : Colors.black54,
                                 ),
                                 if (_isExpanded) ...[
@@ -169,7 +185,7 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
                                     style: TextStyle(
                                       color:
                                           isSelected
-                                              ? Theme.of(context).primaryColor
+                                              ? AppColors.color10
                                               : Colors.black87,
                                       fontWeight:
                                           isSelected
@@ -197,24 +213,25 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
                           (route) => false,
                         );
                       },
-                      child:Row(
-                          children: [
-                            const Icon(Icons.logout, color: Colors.red),
-                            if (_isExpanded) ...[
-                              const SizedBox(width: 15),
-                              const Text(
-                                'Logout',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                      child: Row(
+                        children: [
+                          IconButton(onPressed: (){
+                            _logout(context);
+                          }, icon: Icon(Icons.logout)) ,
+                          if (_isExpanded) ...[
+                            const SizedBox(width: 15),
+                            const Text(
+                              'Logout',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
+                            ),
                           ],
-                        ),
+                        ],
                       ),
                     ),
-                  
+                  ),
                 ],
               ),
             ),

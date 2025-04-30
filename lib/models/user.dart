@@ -22,4 +22,14 @@ class User {
       phoneNumber: data['phoneNumber'] ?? '',
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'uid': uid,
+      'username': username,
+      'email': email,
+      'address': address,
+      'phoneNumber': phoneNumber,
+    };
+  }
 }
