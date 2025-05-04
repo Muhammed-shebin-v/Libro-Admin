@@ -8,7 +8,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:libro_admin/db/book.dart';
-import 'package:libro_admin/models/book.dart';
+import 'package:libro_admin/screens/addpop.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/long_button.dart';
 
@@ -21,9 +21,7 @@ class AddBook extends StatefulWidget {
 
 class _AddBookState extends State<AddBook> {
   File? _image;
-
   String? _uploadedImageUrl;
-
   final ImagePicker _picker = ImagePicker();
 
   final cloudinary = CloudinaryPublic(
@@ -34,13 +32,10 @@ class _AddBookState extends State<AddBook> {
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
       });
-
-      // Now upload to Cloudinary
       await _uploadToCloudinary(_image!);
     }
   }
@@ -53,19 +48,16 @@ class _AddBookState extends State<AddBook> {
           resourceType: CloudinaryResourceType.Image,
         ),
       );
-
       setState(() {
         _uploadedImageUrl = response.secureUrl;
       });
-
       log("Image Uploaded: $_uploadedImageUrl");
     } catch (e) {
       log('Cloudinary upload error: $e');
     }
   }
 
-  Color _selectedColor = Colors.blue; // Default color
-  String _colorString = '#0000FF';
+  Color _selectedColor = Colors.blue;
   Color _colorr = Colors.blue;
 
   void _openColorPicker() {
@@ -98,37 +90,18 @@ class _AddBookState extends State<AddBook> {
     );
   }
 
-  // Convert the color to a hex string
-  String colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).substring(2, 8).toUpperCase()}';
-  }
-
-  bool _isHovered = false;
   final _bookName = TextEditingController();
-
   final _bookId = TextEditingController();
-
   final _authorName = TextEditingController();
-
   final _description = TextEditingController();
-
   final _category = TextEditingController();
-
   final _pages = TextEditingController();
-
   final _stocks = TextEditingController();
-
   final _location = TextEditingController();
-
   final db = DataBaseService();
-
   final _formKey = GlobalKey<FormState>();
-
   bool _isloading = false;
-
-  String? _selectedCategory; // Holds the selected value from the dropdown
-
-  // List of categories for the dropdown
+  String? _selectedCategory;
   final List<String> _categories = [
     'Fiction',
     'Non-Fiction',
@@ -168,9 +141,8 @@ class _AddBookState extends State<AddBook> {
                                     width: 110,
                                     height: 140,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(10),
-                                      ),
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(10),
                                       image:
                                           _image != null
                                               ? DecorationImage(
@@ -189,6 +161,16 @@ class _AddBookState extends State<AddBook> {
                                               )
                                               : null,
                                     ),
+                                    child:
+                                        _image == null
+                                            ? const Center(
+                                              child: Icon(
+                                                Icons.image,
+                                                size: 40,
+                                                color: Colors.grey,
+                                              ),
+                                            )
+                                            : null,
                                   ),
                                 ),
 
@@ -313,29 +295,35 @@ class _AddBookState extends State<AddBook> {
                                 Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: Colors.red,
+                                    color: const Color.fromARGB(
+                                      255,
+                                      255,
+                                      255,
+                                      255,
+                                    ),
                                     border: Border.all(),
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
 
-                                  child: DropdownButton<String>(
-                                    value:
-                                        _selectedCategory,
-                                    hint: Text(
-                                      'Select Category',
-                                    ), 
-                                    onChanged: (newValue) {
-                                      setState(() {
-                                        _selectedCategory =
-                                            newValue; 
-                                      });
-                                    },
-                                    items:
-                                        _categories.map((category) {
-                                          return DropdownMenuItem<String>(
-                                            value: category,
-                                            child: Text(category),
-                                          );
-                                        }).toList(),
+                                  child: Flexible(
+                                    child: DropdownButton<String>(
+                                      underline: const SizedBox(),
+                                      isExpanded: true,
+                                      value: _selectedCategory,
+                                      hint: Text('Category'),
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          _selectedCategory = newValue;
+                                        });
+                                      },
+                                      items:
+                                          _categories.map((category) {
+                                            return DropdownMenuItem<String>(
+                                              value: category,
+                                              child: Text(category),
+                                            );
+                                          }).toList(),
+                                    ),
                                   ),
                                 ),
 
@@ -456,7 +444,6 @@ class _AddBookState extends State<AddBook> {
                                     //     _location.clear();
                                     //     _pages.clear();
                                     //     _stocks.clear();
-                                    //     log(_colorString);
                                     //     ScaffoldMessenger.of(
                                     //       context,
                                     //     ).showSnackBar(
@@ -482,147 +469,8 @@ class _AddBookState extends State<AddBook> {
                                     //     ),
                                     //   );
                                     // }
-                                    _showUserFormModal(context);
+                                    showAddBookDialog(context);
                                   },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          flex: 4,
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: AppColors.color30,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(),
-                            ),
-                            padding: const EdgeInsets.all(10.0),
-                            margin: const EdgeInsets.all(10.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(_bookId.text),
-                                    const Spacer(),
-                                  ],
-                                ),
-                                Divider(),
-                                Center(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        height: 120,
-                                        width: 80,
-                                        decoration: BoxDecoration(
-                                          color: Colors.blue.shade200,
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
-                                          image:
-                                              _image != null
-                                                  ? DecorationImage(
-                                                    image:
-                                                        kIsWeb
-                                                            ? NetworkImage(
-                                                              _image!.path,
-                                                            )
-                                                            : FileImage(
-                                                                  File(
-                                                                    _image!
-                                                                        .path,
-                                                                  ),
-                                                                )
-                                                                as ImageProvider,
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                  : null,
-                                        ),
-                                      ),
-
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        _bookName.text,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        _authorName.text,
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: Colors.white,
-                                    border: Border.all(),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 16,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            _stocks.text,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const Icon(
-                                            Icons.star,
-                                            color: Colors.amber,
-                                          ),
-                                        ],
-                                      ),
-                                      Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                width: 12,
-                                                height: 12,
-                                                decoration: const BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: Colors.red,
-                                                ),
-                                              ),
-                                              Text('  Not Available'),
-                                            ],
-                                          ),
-                                          Text(
-                                            ' ${_pages.text} • ${_category.text}',
-                                          ),
-                                        ],
-                                      ),
-                                      Text('1k+ readers'),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  _description.text,
-                                  style: const TextStyle(height: 1.5),
-                                ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.location_on),
-                                    const SizedBox(width: 8),
-                                    Text(_location.text),
-                                  ],
                                 ),
                               ],
                             ),
@@ -635,111 +483,4 @@ class _AddBookState extends State<AddBook> {
               ),
     );
   }
-
 }
-void _showUserFormModal(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black.withOpacity(0.4), // semi-transparent black
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Stack(
-          children: [
-            // Blur background of dialog only
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(),
-            ),
-            _UserForm(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  class _UserForm extends StatefulWidget {
-  @override
-  State<_UserForm> createState() => _UserFormState();
-}
-
-class _UserFormState extends State<_UserForm> {
-  final _formKey = GlobalKey<FormState>();
-
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final ageController = TextEditingController();
-  final phoneController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Fancy image/avatar container
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.indigo.shade100,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.person, size: 40, color: Colors.indigo),
-                ),
-                const SizedBox(height: 20),
-
-                // TextFormFields
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                ),
-                TextFormField(
-                  controller: ageController,
-                  decoration: const InputDecoration(labelText: 'Age'),
-                  keyboardType: TextInputType.number,
-                ),
-                TextFormField(
-                  controller: phoneController,
-                  decoration: const InputDecoration(labelText: 'Phone'),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 20),
-
-                // Confirm button
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // You can save user info here
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  child: const Text('Confirm', style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-

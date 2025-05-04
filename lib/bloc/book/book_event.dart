@@ -1,3 +1,5 @@
+import 'package:libro_admin/models/book.dart';
+
 abstract class BookEvent {
    const BookEvent();
 }
@@ -17,6 +19,6 @@ class DeleteBook extends BookEvent {
 }
 
 class EditBook extends BookEvent {
-  final Map<String, dynamic> book;
+  final  book;
   const EditBook(this.book);
 }

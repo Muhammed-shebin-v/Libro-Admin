@@ -19,6 +19,7 @@ class DataBaseService {
             'stocks': book.stocks,
             'location': book.location,
             'imgUrl': book.imgUrl,
+            'date':DateTime.now()
           });
       await docRef.update({'uid': docRef.id});
       log('created new');
@@ -40,9 +41,7 @@ class DataBaseService {
 
 
   Future<void> updateBook(Map<String, dynamic> book) async {
-    await _fb
-        .doc(book['uid'])
-        .update(book);
+    await _fb.doc(book['uid']).update(book);
   }
 
   Future<void> delete(String uid) async {

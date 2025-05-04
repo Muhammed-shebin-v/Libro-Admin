@@ -31,7 +31,7 @@ class Book {
       pages: data['pages'] ?? 0,
       stocks: data['stocks'] ?? 0,
       location: data['location'] ?? '',
-      imgUrl: data['imgUrl']
+      imgUrl: data['imgUrl']??''
     );
   }
 
