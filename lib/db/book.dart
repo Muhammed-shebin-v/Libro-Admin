@@ -19,7 +19,8 @@ class DataBaseService {
             'stocks': book.stocks,
             'location': book.location,
             'imgUrl': book.imgUrl,
-            'date':DateTime.now()
+            'date':DateTime.now(),
+            // 'color':book.color
           });
       await docRef.update({'uid': docRef.id});
       log('created new');
@@ -36,9 +37,7 @@ class DataBaseService {
       bookList.map((item) => Map<String, dynamic>.from(item)),
     );
   }
-  // Future<void> updateBook(Map<String, dynamic> book) async {
-  //   await _fb.doc(book['uid']).update(book);
-  // }
+ 
   Future<void> updateBook( book) async {
     try {
       await _fb.doc(book['uid']).update({
@@ -52,11 +51,12 @@ class DataBaseService {
         'location': book['location'],
         'imgUrl': book['imgUrl'],
         'date': DateTime.now(),
+        'color':book['color']
       });
       // log('Updated book with ID: ${book.uid}');
     } catch (e) {
       log('Error updating book: ${e.toString()}');
-      rethrow; // Rethrow the error for handling in BLoC or UI
+      rethrow; 
     }
   }
   Future<void> delete(String uid) async {

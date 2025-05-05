@@ -81,9 +81,6 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
           child: LibraryManagementScreen(),
         );
         break;
-      case 'AddBook':
-        nextScreen = LibroWebLayout(currentScreen: 'AddBook', child: AddBook());
-        break;
       default:
         nextScreen = LibroWebLayout(
           currentScreen: 'Dashboard',
@@ -98,7 +95,6 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
     {'title': 'Home', 'icon': Icons.home},
     {'title': 'Users', 'icon': Icons.verified_user},
     {'title': 'Books', 'icon': Icons.book},
-    {'title': 'AddBook', 'icon': Icons.add},
     {'title': 'AD', 'icon': Icons.newspaper},
   ];
 

@@ -2,22 +2,23 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
-import 'package:libro_admin/screens/addpop.dart';
 import 'package:libro_admin/themes/fonts.dart';
+import 'package:libro_admin/widgets/addpop.dart';
 import 'package:libro_admin/widgets/filter.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FilterCubit extends Cubit<String?> {
-  FilterCubit(super.initialFilter); // Set initial state
+  FilterCubit(super.initialFilter); 
 
   void selectFilter(String filter) {
-    emit(filter); // Emit the selected filter
+    emit(filter); 
   }
 }
 
@@ -67,8 +68,8 @@ class LibraryManagementScreen extends StatelessWidget {
                             onPressed: () {
                               showAddBookDialog(context,false);
                             },
-                            icon: const Icon(Icons.sort),
-                            label: const Text('Sort'),
+                            icon: const Icon(Icons.add),
+                            label: const Text('Add Book'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.grey.shade200,
                               foregroundColor: Colors.black,
@@ -292,9 +293,7 @@ class BookDetailsWidget extends StatelessWidget {
                         icon: const Icon(Icons.delete),
                         onPressed: () {
                           // db.delete(book['uid'], context);
-                          context.read<BookBloc>().add(
-                            DeleteBook(book?['uid']),
-                          );
+                         showCustomDialog(context);
                         },
                       ),
                     ],
@@ -432,6 +431,20 @@ class BookDetailsWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Gap(20),
+                  const Text(
+                    'Total Fine Collected',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Gap(10),
+                  Container(
+                    height: 200,
+                    decoration: 
+                    BoxDecoration(
+                      color: AppColors.color60,
+                      border: Border.all()
+                    ),
+                  ),
                   const Spacer(),
                   SizedBox(
                     width: double.infinity,
@@ -451,4 +464,29 @@ class BookDetailsWidget extends StatelessWidget {
               ),
     );
   }
+  Future<void> showCustomDialog(BuildContext contextS) async {
+  return showDialog(
+    context: contextS,
+    builder: (context) => AlertDialog(
+      title: Text("Delete Book"),
+      content: Text("Do you really want to Delete this Book?"),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context), 
+          child: Text("Cancel"),
+        ),
+        TextButton(
+          onPressed: ()async {
+            context.read<BookBloc>().add(
+                            DeleteBook(book?['uid']),
+                          );
+                          Navigator.pop(context);
+          },
+          child: Text("delete", style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
+}
 }

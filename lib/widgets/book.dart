@@ -11,7 +11,7 @@ class BookWidget extends StatelessWidget {
               width: 80,
               height: 110,
               decoration: BoxDecoration(
-                color: Colors.black,
+                color: const Color.fromARGB(255, 151, 149, 149),
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(10),
                   topLeft: Radius.circular(10),

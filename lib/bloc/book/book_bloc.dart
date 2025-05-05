@@ -39,8 +39,8 @@ class BookBloc extends Bloc<BookEvent, BookState> {
       // final currentState = state as BookLoaded;
       emit(BookLoading());
       try {
-        await db.delete(event.uid); // Assuming this deletes and returns nothing
-        final books = await db.getBooks(); // Refresh the books
+        await db.delete(event.uid); 
+        final books = await db.getBooks();
         emit(BookLoaded(books));
       } catch (e) {
         emit(BookError(e.toString())); 
@@ -65,8 +65,8 @@ Future<void> _onAddBook(AddBook event, Emitter<BookState> emit) async {
       // final currentState = state as BookLoaded;
       emit(BookLoading());
       try {
-        await db.updateBook(event.book); // Assuming this method exists
-        final books = await db.getBooks(); // Refresh the books
+        await db.updateBook(event.book); 
+        final books = await db.getBooks();
         emit(BookLoaded(books, selectedBook: event.book));
       } catch (e) {
         emit(BookError(e.toString()));

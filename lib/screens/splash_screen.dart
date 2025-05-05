@@ -5,12 +5,23 @@ import 'package:libro_admin/screens/side_bar.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<SplashScreen> createState() => _SplashScreenState();
+  
+}
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     _checkLoginStatus(context);
+  }
+  @override
+  Widget build(BuildContext context) {
+   
     return Scaffold(
       body: Center(
         child: Lottie.asset('lib/assets/Animation - 1742030119292.json',height: 200,fit: BoxFit.fill),
@@ -20,10 +31,10 @@ class SplashScreen extends StatelessWidget {
 
   void _checkLoginStatus(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    bool? isLoggedIn =  prefs.getBool('isLoggedIn')??false;
 
-    Future.delayed(Duration(seconds: 2), () {
-      if (isLoggedIn) {
+    Future.delayed(Duration(seconds: 3), () {
+      if (isLoggedIn==true) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) =>  LibroWebLayout(currentScreen: 'Home', child: HomeScreen()),),

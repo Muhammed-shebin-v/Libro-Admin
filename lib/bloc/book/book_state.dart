@@ -16,7 +16,6 @@ class BookLoaded extends BookState {
   
   const BookLoaded(this.books, {this.selectedBook});
   
-  // Create a copy of the current state with a new selected book
   BookLoaded copyWith({
     List<Map<String, dynamic>>? books,
     Map<String, dynamic>? selectedBook,

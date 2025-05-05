@@ -54,20 +54,81 @@ class HomeScreen extends StatelessWidget {
              ),
            ),
            Gap(30),
-           Text('Overview'),
-           Container(
-            height: 250,
-            width: double.infinity,
-            color: const Color.fromARGB(255, 225, 220, 220),
-            child: Text('graph'),
+           Row(
+             children: [
+               Flexible(
+                flex: 6,
+                 child: Container(
+                  height: 250,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 225, 220, 220),
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(20)
+                  
+                  ),
+                  child: Text("Today Borrows"),
+                 ),
+               ),
+               Gap(20),
+                Flexible(
+                  flex: 4,
+                  child: Container(
+                  height: 250,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 225, 220, 220),
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(20)
+                  
+                  ),
+                  child: Text("Borrow Graph"),
+                                 ),
+                ),
+             ],
            ),
-           Gap(30),
+           Gap(20),
            Container(
-            height: 500,
-            color: Colors.grey,
+            height: 300,
+            color: const Color.fromARGB(255, 255, 255, 255),
             width: double.infinity,
             child: BooksList(title: 'Books of the week', books: books, images: images, authors: authors, gonores: gonores, colors: colors),
-           )
+           ),
+           Gap(20),
+           Row(
+             children: [
+               Flexible(
+                flex: 4,
+                 child: Container(
+                        height: 250,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 225, 220, 220),
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(20)
+                        
+                        ),
+                        child: Text("Fine Graph"),
+                                       ),
+               ),
+               Gap(20),
+               Flexible(
+                flex: 6,
+                 child: Container(
+                  height: 250,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 225, 220, 220),
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(20)
+                  
+                  ),
+                  child: Text("Today Fines"),
+                 ),
+               ),
+               Gap(20),
+             ],
+           ),
           ],
         ),),
       )),

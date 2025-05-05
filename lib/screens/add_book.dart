@@ -8,7 +8,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:libro_admin/db/book.dart';
-import 'package:libro_admin/screens/addpop.dart';
+import 'package:libro_admin/widgets/addpop.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/long_button.dart';
 

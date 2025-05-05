@@ -9,6 +9,7 @@ import 'package:libro_admin/bloc/user/users_state.dart';
 import 'package:libro_admin/models/user.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/filter.dart';
+import 'package:libro_admin/widgets/long_button.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
 
 class UserManagementScreen extends StatefulWidget {
@@ -101,12 +102,13 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
+                            color: Colors.grey,
                             shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage('lib/assets/IMG_0899.JPG'),
-                              fit: BoxFit.cover,
-                            ),
                           ),
+                          child: user['imgUrl']!=null?
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(80),
+                            child: Image.network(user['imgUrl'],fit: BoxFit.fill,)):null
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -162,8 +164,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       ),
                       Expanded(
                         child: _buildInfoSection('Score', [
-                          InfoItem('May', '100'),
-                          InfoItem('Total', '1200'),
+                          InfoItem('May', user['score'].toString()),
+                          InfoItem('Total',user['score'].toString()),
                         ]),
                       ),
                     ],
@@ -188,22 +190,34 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                   ),
 
                   const SizedBox(height: 20),
-                  _buildInfoSection('Badges', []),
-                  const Spacer(),
-                  _buildInfoSection('Current Borrows', []),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE8BA7A),
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text('Show Complete info'),
+                  const Text(
+                    'Current Borrows',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Gap(10),
+                  Container(
+                    height: 100,
+                    decoration: 
+                    BoxDecoration(
+                      color: AppColors.color60,
+                      border: Border.all()
                     ),
                   ),
+                  const Text(
+                    'Total Fine Collected',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Gap(10),
+                  Container(
+                    height: 150,
+                    decoration: 
+                    BoxDecoration(
+                      color: AppColors.color60,
+                      border: Border.all()
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                 CustomLongButton(title: 'Show all Info', ontap: (){})
                 ],
               ),
     )),
@@ -283,7 +297,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                 _buildTableHeader('Email'),
                 _buildTableHeader('Place'),
                 _buildTableHeader('M.type'),
-                _buildTableHeader('Status'),
+                _buildTableHeader('Block'),
               ],
             ),
           ),
@@ -335,13 +349,19 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                             child: Row(
                               children: [
                                 const SizedBox(width: 8),
-                                CircleAvatar(
-                                  backgroundColor: Colors.grey,
-                                  radius: 16,
-                                  child: Icon(
-                                    Icons.person,
-                                    size: 20,
-                                    color: Colors.white,
+                                SizedBox(
+                                  height: 40,
+                                  width: 40,
+                                  child: ClipRRect(
+                                    
+                                    borderRadius: BorderRadius.circular(80),
+                                    child: user['imgUrl']==null?
+                                     Icon(
+                                      Icons.person,
+                                      size: 20,
+                                      color: const Color.fromARGB(255, 0, 0, 0),
+                                    
+                                    ):Image.network(user['imgUrl'],fit: BoxFit.fill,)
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -365,7 +385,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                Text(user['username']),
+                                user['isBlock']==null?
+                                Text(user['username']):Text(user['isBlock'].toString())
                               ],
                             ),
                           ),
@@ -382,159 +403,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  Widget _buildUserDetail(user) {
-    // final user = selectedUser;
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.color30,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(),
-      ),
-      margin: const EdgeInsets.all(10),
-      padding: const EdgeInsets.all(20),
-      child:
-          user == null
-              ? Center(
-                child: Text(
-                  'Select a user to view details',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              )
-              : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.notifications),
-                          const SizedBox(width: 8),
-                          Text(selectedUser!['fullName']),
-                        ],
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () {},
-                        tooltip: 'block',
-                      ),
-                    ],
-                  ),
-                  const Divider(),
-                  Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: AssetImage('lib/assets/IMG_0899.JPG'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          selectedUser!['username'],
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          selectedUser!['email'],
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.chat_bubble_outline),
-                        onPressed: () {},
-                        iconSize: 28,
-                      ),
-                      const SizedBox(width: 20),
-                      IconButton(
-                        icon: const Icon(Icons.phone),
-                        onPressed: () {},
-                        iconSize: 28,
-                      ),
-                      const SizedBox(width: 20),
-                      IconButton(
-                        icon: const Icon(Icons.email_outlined),
-                        onPressed: () {},
-                        iconSize: 28,
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _buildInfoSection('MemberShip', [
-                          InfoItem('Type', 'Platinum'),
-                          InfoItem('Exp', '12/2/2025'),
-                        ]),
-                      ),
-                      Expanded(
-                        child: _buildInfoSection('Score', [
-                          InfoItem('May', '100'),
-                          InfoItem('Total', '1200'),
-                        ]),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _buildInfoSection('Address', [
-                          InfoItem('', selectedUser!['address']),
-                        ]),
-                      ),
-                      Expanded(
-                        child: _buildInfoSection('Phone', [
-                          InfoItem('', selectedUser!['phoneNumber']),
-                        ]),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-                  _buildInfoSection('Badges', []),
-                  const Spacer(),
-                  _buildInfoSection('Current Borrows', []),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE8BA7A),
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      child: const Text('Show Complete info'),
-                    ),
-                  ),
-                ],
-              ),
-    );
-  }
 
   Widget _buildTableHeader(String title, {int flex = 1}) {
     return Expanded(
