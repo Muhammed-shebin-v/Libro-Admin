@@ -11,8 +11,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<FetchUsers>(_onFetchUsers);
     on<SelectUser>(_onSelectUser);
   }
-
-  
   Future<void> _onFetchUsers(FetchUsers event, Emitter<UserState> emit) async {
   emit(UserLoading());
   try {
@@ -23,13 +21,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(UserError("Failed to fetch users: $e")); 
   }
 }
-
-
- 
-  void _onSelectUser (SelectUser  event, Emitter<UserState> emit) {
+void _onSelectUser (SelectUser  event, Emitter<UserState> emit) {
   if (state is UserLoaded) {
-    final current = state as UserLoaded;
-    emit(UserLoaded(current.users, selectedUser : event.user));
+    final currentState = state as UserLoaded;
+    emit(currentState.copyWith(selectedUser: event.user));
   }
 }
 }
+

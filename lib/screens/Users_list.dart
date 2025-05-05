@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:libro_admin/bloc/user/users_bloc.dart';
+import 'package:libro_admin/bloc/user/users_event.dart';
 import 'package:libro_admin/bloc/user/users_state.dart';
+import 'package:libro_admin/models/user.dart';
 import 'package:libro_admin/themes/fonts.dart';
+import 'package:libro_admin/widgets/filter.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
 
 class UserManagementScreen extends StatefulWidget {
@@ -29,8 +34,12 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
   // }
 
   Map<String, dynamic>? selectedUser;
-  String _selectedFilter = 'All';
-  final List<String> _filters = ['All', 'Borrowed', 'Blocked'];
+
+  final FilterController filterController2 = FilterController([
+    'Fiction',
+    'Non-Fiction',
+    'Science',
+  ]);
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +52,161 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           } else if (state is UserError) {
             return Center(child: Text(state.message));
           } else if (state is UserLoaded) {
+            final user=state.selectedUser;
             return Row(
               children: [
                 Expanded(flex: 4, child: _buildMainContent(state)),
-                SizedBox(width: 400, child: _buildUserDetail()),
+                SizedBox(width: 400,
+                 child:Container(
+      decoration: BoxDecoration(
+        color: AppColors.color30,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(),
+      ),
+      margin: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(20),
+      child:
+          user == null
+              ? Center(
+                child: Text(
+                  'Select a user to view details',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              )
+              : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.notifications),
+                          const SizedBox(width: 8),
+                          Text(user['fullName']),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {},
+                        tooltip: 'block',
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  Center(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: AssetImage('lib/assets/IMG_0899.JPG'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          user['username'],
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          user['email'],
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.chat_bubble_outline),
+                        onPressed: () {},
+                        iconSize: 28,
+                      ),
+                      const SizedBox(width: 20),
+                      IconButton(
+                        icon: const Icon(Icons.phone),
+                        onPressed: () {},
+                        iconSize: 28,
+                      ),
+                      const SizedBox(width: 20),
+                      IconButton(
+                        icon: const Icon(Icons.email_outlined),
+                        onPressed: () {},
+                        iconSize: 28,
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _buildInfoSection('MemberShip', [
+                          InfoItem('Type', 'Platinum'),
+                          InfoItem('Exp', '12/2/2025'),
+                        ]),
+                      ),
+                      Expanded(
+                        child: _buildInfoSection('Score', [
+                          InfoItem('May', '100'),
+                          InfoItem('Total', '1200'),
+                        ]),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _buildInfoSection('Address', [
+                          InfoItem('', user['address']),
+                        ]),
+                      ),
+                      Expanded(
+                        child: _buildInfoSection('Phone', [
+                          InfoItem('', user['phoneNumber']),
+                        ]),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+                  _buildInfoSection('Badges', []),
+                  const Spacer(),
+                  _buildInfoSection('Current Borrows', []),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFE8BA7A),
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: const Text('Show Complete info'),
+                    ),
+                  ),
+                ],
+              ),
+    )),
               ],
             );
           }
@@ -97,43 +257,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             ],
           ),
 
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              children:
-                  _filters.map((filter) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            _selectedFilter = filter;
-                          });
-                        },
-                        child: Column(
-                          children: [
-                            Text(
-                              filter,
-                              style: TextStyle(
-                                fontWeight:
-                                    _selectedFilter == filter
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            if (_selectedFilter == filter)
-                              Container(
-                                height: 2,
-                                width: 24,
-                                color: Colors.black,
-                              ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-            ),
+          //  FilterButton(filters: _filters,isBook: false,),
+          FilterButton(
+            filters: filterController2.filters,
+            controller: filterController2,
           ),
           const Divider(),
 
@@ -180,14 +307,16 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               itemBuilder: (context, index) {
                 final user = state.users[index];
                 bool isSelected =
-                    selectedUser != null && selectedUser!['uid'] == user['uid'];
+                    state.selectedUser != null && state.selectedUser!['uid'] == user['uid'];
+                    
                 return InkWell(
                   onTap: () {
-                    //context.read<UserBloc>().add(SelectUser(user));},
-                    setState(() {
-                      selectedUser = user;
-                    });
+                   context.read<UserBloc>().add(SelectUser(user));
+                    // setState(() {
+                    //   selectedUser = user;
+                    // });
                   },
+               
                   child: Container(
                     decoration: BoxDecoration(
                       color:
@@ -253,8 +382,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
   }
 
-  Widget _buildUserDetail() {
-    final user = selectedUser;
+  Widget _buildUserDetail(user) {
+    // final user = selectedUser;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.color30,
@@ -324,7 +453,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
                   const SizedBox(height: 20),
 
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -350,7 +478,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
 
                   const SizedBox(height: 20),
 
-                  
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -415,8 +542,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
     );
   }
-
-  
 
   Widget _buildInfoSection(String title, List<InfoItem> items) {
     return Column(

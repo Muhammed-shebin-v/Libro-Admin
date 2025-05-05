@@ -1,11 +1,13 @@
 import 'dart:developer';
-
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gap/gap.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:libro_admin/bloc/book/book_bloc.dart';
+import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/db/book.dart';
 import 'package:libro_admin/models/book.dart';
 import 'package:libro_admin/widgets/bookform.dart';
@@ -13,25 +15,66 @@ import 'package:libro_admin/widgets/counter.dart';
 import 'package:libro_admin/widgets/long_button.dart';
 
 class AddBookDialog extends StatefulWidget {
-  const AddBookDialog({super.key});
+  final Map<String, dynamic>? bookData; 
+  final bool isUpdate;
+
+  const AddBookDialog({super.key,required this.isUpdate,this.bookData,});
 
   @override
   State<AddBookDialog> createState() => _AddBookDialogState();
 }
 
 class _AddBookDialogState extends State<AddBookDialog> {
-  String? _uploadedImageUrl;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.bookData != null) {
+      _populateFields(widget.bookData!);
+    }
+  }
 
+  void _populateFields(Map<String, dynamic> data) {
+   
+    _bookNameController.text = data['bookname'] ?? '';
+    _bookIdController.text = data['bookid'] ?? '';
+    _authorNameController.text = data['authername'] ?? '';
+    _descriptionController.text = data['description'] ?? '';
+    _categoryController.text = data['category'] ?? '';
+    _pagesController.text = data['pages'] ?? '';
+    _stocksController.text = data['stocks'] ?? '';
+    _locationController.text = data['location'] ?? '';
+    _uploadedImageUrl = data['imgUrl'] ?? '';
+    if (_uploadedImageUrl != null && _uploadedImageUrl!.isNotEmpty) {
+      image = XFile(_uploadedImageUrl!); 
+    }
+  }
+  String? _uploadedImageUrl;
   final cloudinary = CloudinaryPublic(
     'dwzeuyi12',
     'unsigned_uploads',
     cache: false,
   );
+  Color _selectedColor = Colors.blue;
+  Color _colorr = Colors.blue;
+  XFile? image;
+  final _bookNameController = TextEditingController();
+  final _bookIdController = TextEditingController();
+  final _authorNameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _pagesController = TextEditingController();
+  final _stocksController = TextEditingController();
+  final _locationController = TextEditingController();
+  final db = DataBaseService();
+  final _formKey = GlobalKey<FormState>();
 
   Future<void> _pickImage() async {
     final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
     );
+    setState(() {
+      image = pickedFile;
+    });
     if (pickedFile != null) {
       await _uploadToCloudinary(File(pickedFile.path));
     }
@@ -45,17 +88,15 @@ class _AddBookDialogState extends State<AddBookDialog> {
           resourceType: CloudinaryResourceType.Image,
         ),
       );
-      setState(() {
-        _uploadedImageUrl = response.secureUrl;
-      });
+      // setState(() {
+      _uploadedImageUrl = response.secureUrl;
+      // });
       log("Image Uploaded: $_uploadedImageUrl");
     } catch (e) {
       log('Cloudinary upload error: $e');
     }
   }
 
-  Color _selectedColor = Colors.blue;
-  Color _colorr = Colors.blue;
 
   void _openColorPicker() {
     showDialog(
@@ -87,23 +128,6 @@ class _AddBookDialogState extends State<AddBookDialog> {
     );
   }
 
-  final _bookNameController = TextEditingController();
-  final _bookIdController = TextEditingController();
-  final _authorNameController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _categoryController = TextEditingController();
-  final _pagesController = TextEditingController();
-  final _stocksController = TextEditingController();
-  final _locationController = TextEditingController();
-  final db = DataBaseService();
-  final _formKey = GlobalKey<FormState>();
-  String? _selectedCategory;
-  final List<String> _categories = [
-    'Fiction',
-    'Non-Fiction',
-    'Science',
-    'History',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -141,8 +165,8 @@ class _AddBookDialogState extends State<AddBookDialog> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child:
-                              _uploadedImageUrl != null
-                                  ? Image.network(_uploadedImageUrl!)
+                              image != null
+                                  ? Image.network(image!.path, fit: BoxFit.fill)
                                   : Icon(Icons.image),
                         ),
                       ),
@@ -227,51 +251,43 @@ class _AddBookDialogState extends State<AddBookDialog> {
                 ),
                 BookForm(hint: 'Location', controller: _locationController),
                 CustomLongButton(
-                  title: 'Add',
+                  title: widget.isUpdate==true?'Update':'Add',
                   ontap: () async {
-                   
-                      if (_formKey.currentState!.validate() && _uploadedImageUrl != null) {
-                        Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: Colors.green,
-                            elevation: 5.0,
-                            padding: EdgeInsets.all(5),
-                            content: Text(
-                              'Book added successfully',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
-                        await db.create(
-                          Book(
-                            imgUrl: _uploadedImageUrl!,
-                            bookName: _bookNameController.text,
-                            bookId: _bookIdController.text,
-                            authorName: _authorNameController.text,
-                            description: _descriptionController.text,
-                            category: _categoryController.text,
-                            pages: _pagesController.text,
-                            stocks: _stocksController.text,
-                            location: _locationController.text,
-                          ),
-                        );
-                      }
-                      else{
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: const Color.fromARGB(255, 231, 19, 19),
-                            elevation: 5.0,
-                            padding: EdgeInsets.all(5),
-                            content: Text(
-                              'Enter All Details Correctly',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        );
-                      }
-                    } 
-           
+                    // if (_formKey.currentState!.validate() && _uploadedImageUrl != null) {
+                    //   Navigator.pop(context);
+                    //     ScaffoldMessenger.of(context).showSnackBar(
+                    //     SnackBar(
+                    //       backgroundColor: Colors.green,
+                    //       elevation: 5.0,
+                    //       padding: EdgeInsets.all(5),
+                    //       content: Text(
+                    //         'Book added successfully',
+                    //         textAlign: TextAlign.center,
+                    //       ),
+                    //     ),
+                    //   );
+                    //   await db.create(
+                    //     Book(
+                    //       imgUrl: _uploadedImageUrl!,
+                    //       bookName: _bookNameController.text,
+                    //       bookId: _bookIdController.text,
+                    //       authorName: _authorNameController.text,
+                    //       description: _descriptionController.text,
+                    //       category: _categoryController.text,
+                    //       pages: _pagesController.text,
+                    //       stocks: _stocksController.text,
+                    //       location: _locationController.text,
+                    //     ),
+                    //   );
+                    // }
+                    // else{
+                    //   ScaffoldMessenger.of(context).showSnackBar(
+                    //
+                    //     ),
+                    //   );
+                  
+                    _onSubmit(context);
+                  },
                 ),
               ],
             ),
@@ -280,13 +296,66 @@ class _AddBookDialogState extends State<AddBookDialog> {
       ),
     );
   }
+
+  void _onSubmit(BuildContext context) {
+    if (!_formKey.currentState!.validate() || _uploadedImageUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Color.fromARGB(255, 231, 19, 19),
+          elevation: 5.0,
+          padding: EdgeInsets.all(5),
+          content: Text(
+            'Enter All Details Correctly',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+      return;
+    }
+
+    final book = Book(
+      imgUrl: _uploadedImageUrl!,
+      bookName: _bookNameController.text.trim(),
+      bookId: _bookIdController.text.trim(),
+      authorName: _authorNameController.text.trim(),
+      description: _descriptionController.text.trim(),
+      category: _categoryController.text.trim(),
+      pages: _pagesController.text.trim(),
+      stocks: _stocksController.text.trim(),
+      location: _locationController.text.trim(),
+    );
+    Map<String,dynamic> updatedBook={
+      'uid':widget.bookData!['uid'],
+      'bookname':  _bookNameController.text.trim(),
+      'bookId': _bookIdController.text.trim(),
+      'authorName':  _authorNameController.text.trim(),
+      'description': _descriptionController.text.trim(),
+      'category': _categoryController.text.trim(),
+      'pages': _pagesController.text.trim(),
+      'stocks': _stocksController.text.trim(),
+      'location': _locationController.text.trim(),
+      'imgUrl':_uploadedImageUrl!,
+    };
+  widget.isUpdate==true?
+  context.read<BookBloc>().add(EditBook(updatedBook)):
+    context.read<BookBloc>().add(AddBook(book));
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green,
+        elevation: 5.0,
+        padding: EdgeInsets.all(5),
+        content: Text('Book added successfully', textAlign: TextAlign.center),
+      ),
+    );
+  }
 }
 
-void showAddBookDialog(BuildContext context) {
+void showAddBookDialog(BuildContext context,bool isUpdate,{Map<String, dynamic>? book}) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return const AddBookDialog();
+      return  AddBookDialog(bookData: book,isUpdate: isUpdate,);
     },
   );
 }

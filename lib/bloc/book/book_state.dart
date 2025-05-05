@@ -1,3 +1,5 @@
+import 'package:libro_admin/models/book.dart';
+
 abstract class BookState {
     const BookState();
 }
@@ -29,4 +31,8 @@ class BookLoaded extends BookState {
 class BookError extends BookState {
   final String message;
   const BookError(this.message);
+}
+class BookAdded extends BookState {
+  final Book book;
+  const BookAdded(this.book);
 }

@@ -1,4 +1,9 @@
-abstract class UserState {}
+import 'package:equatable/equatable.dart';
+
+// abstract class UserState {}
+abstract class UserState{
+ const UserState();
+}
 
 class UserInitial extends UserState {}
 
@@ -8,10 +13,26 @@ class UserLoaded extends UserState {
   final List<Map<String, dynamic>> users;
   final Map<String, dynamic>? selectedUser;
 
-  UserLoaded(this.users, {this.selectedUser});
+   const UserLoaded(this.users, {this.selectedUser});
+
+UserLoaded copyWith({
+    List<Map<String, dynamic>>? users,
+    Map<String, dynamic>? selectedUser,
+  }) {
+    return UserLoaded(
+      users ?? this.users,
+      selectedUser: selectedUser ?? this.selectedUser,
+    );
+  }
 }
 
 class UserError extends UserState {
   final String message;
-  UserError(this.message);
+   UserError(this.message);
+
 }
+
+
+
+
+

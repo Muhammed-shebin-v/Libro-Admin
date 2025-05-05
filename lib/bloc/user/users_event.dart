@@ -1,8 +1,10 @@
-abstract class UserEvent {}
+abstract class UserEvent {
+  const UserEvent();
+}
 
 class FetchUsers extends UserEvent {}
 
 class SelectUser extends UserEvent {
   final Map<String, dynamic> user;
-  SelectUser(this.user);
+  const SelectUser(this.user);
 }

@@ -2,27 +2,33 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
 import 'package:libro_admin/screens/addpop.dart';
 import 'package:libro_admin/themes/fonts.dart';
+import 'package:libro_admin/widgets/filter.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LibraryManagementScreen extends StatefulWidget {
-  const LibraryManagementScreen({super.key});
+class FilterCubit extends Cubit<String?> {
+  FilterCubit(super.initialFilter); // Set initial state
 
-  @override
-  State<LibraryManagementScreen> createState() =>
-      _LibraryManagementScreenState();
+  void selectFilter(String filter) {
+    emit(filter); // Emit the selected filter
+  }
 }
 
-Map<String, dynamic>? selectedBook;
-// final db = DataBaseService();
+class LibraryManagementScreen extends StatelessWidget {
+  LibraryManagementScreen({super.key});
 
-class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
-  String _selectedFilter = 'All';
-  final List<String> _filters = ['All', 'Borrowed', 'Out of Stock'];
+  final FilterController filterController1 = FilterController([
+    'All',
+    'Borrowed',
+    'Out of Stock',
+  ]);
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +38,12 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
         builder: (context, state) {
           if (state is BookLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is BookError) {
+          } 
+          else if (state is BookError) {
             log(state.message);
             return Center(child: Text(state.message));
-          } else if (state is BookLoaded && state.books.isNotEmpty) {
+          } 
+          else if (state is BookLoaded && state.books.isNotEmpty) {
             return Row(
               children: [
                 Expanded(
@@ -57,7 +65,7 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
 
                           ElevatedButton.icon(
                             onPressed: () {
-                            showAddBookDialog(context);
+                              showAddBookDialog(context,false);
                             },
                             icon: const Icon(Icons.sort),
                             label: const Text('Sort'),
@@ -81,41 +89,9 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                       ),
 
                       const SizedBox(height: 16),
-
-                      Row(
-                        children:
-                            _filters.map((filter) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 16.0),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _selectedFilter = filter;
-                                    });
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        filter,
-                                        style: TextStyle(
-                                          fontWeight:
-                                              _selectedFilter == filter
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      if (_selectedFilter == filter)
-                                        Container(
-                                          height: 2,
-                                          width: 24,
-                                          color: Colors.black,
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }).toList(),
+                      FilterButton(
+                        filters: filterController1.filters,
+                        controller: filterController1,
                       ),
 
                       const SizedBox(height: 16),
@@ -171,7 +147,8 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                           itemCount: state.books.length,
                           itemBuilder: (context, index) {
                             final book = state.books[index];
-                            bool isSelected = state.selectedBook != null && 
+                            bool isSelected =
+                                state.selectedBook != null &&
                                 state.selectedBook!['uid'] == book['uid'];
                             return InkWell(
                               onTap: () {
@@ -267,7 +244,7 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                   ),
                 ),
 
-               BookDetailsWidget(book: state.selectedBook)
+                BookDetailsWidget(book: state.selectedBook),
               ],
             );
           } else {
@@ -296,8 +273,8 @@ class BookDetailsWidget extends StatelessWidget {
       margin: const EdgeInsets.all(10.0),
       child:
           book == null
-              ? Center(child: Text('select user')):
-               Column(
+              ? Center(child: Text('select user'))
+              : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -307,13 +284,17 @@ class BookDetailsWidget extends StatelessWidget {
                       const Spacer(),
                       IconButton(
                         icon: const Icon(Icons.edit),
-                        onPressed: () {},
+                        onPressed: () {
+                          showAddBookDialog(context,true,book: book);
+                        },
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
                           // db.delete(book['uid'], context);
-                          context.read<BookBloc>().add(DeleteBook(book?['uid']));
+                          context.read<BookBloc>().add(
+                            DeleteBook(book?['uid']),
+                          );
                         },
                       ),
                     ],
