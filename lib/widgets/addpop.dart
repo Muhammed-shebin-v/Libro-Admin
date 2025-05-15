@@ -2,13 +2,19 @@ import 'dart:developer';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gap/gap.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
+import 'package:libro_admin/bloc/category/categories_bloc.dart';
+import 'package:libro_admin/bloc/category/categories_event.dart';
+import 'package:libro_admin/bloc/category/categories_state.dart';
 import 'package:libro_admin/db/book.dart';
 import 'package:libro_admin/models/book.dart';
+import 'package:libro_admin/models/category.dart';
+import 'package:libro_admin/widgets/add_category_dialog.dart';
 import 'package:libro_admin/widgets/bookform.dart';
 import 'package:libro_admin/widgets/counter.dart';
 import 'package:libro_admin/widgets/long_button.dart';
@@ -28,29 +34,17 @@ class _AddBookDialogState extends State<AddBookDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.bookData != null) {
+    if (widget.isUpdate) {
       _populateFields(widget.bookData!);
-      _loadCategories().then((_) {
-        if (widget.bookData != null) {
-          final categoryFromData = widget.bookData!['category'] as String?;
-          if (categoryFromData != null &&
-              categories.contains(categoryFromData)) {
-            selectedCategory = categoryFromData;
-          } else {
-            selectedCategory = null;
-          }
-          setState(() {});
-        }
-      });
     }
   }
 
   void _populateFields(Map<String, dynamic> data) {
-    _bookNameController.text = data['bookname'] ?? '';
-    _bookIdController.text = data['bookid'] ?? '';
-    _authorNameController.text = data['authername'] ?? '';
+    _bookNameController.text = data['bookName'] ?? '';
+    _bookIdController.text = data['bookId'] ?? '';
+    _authorNameController.text = data['authorName'] ?? '';
     _descriptionController.text = data['description'] ?? '';
-    selectedCategory = data['category'] ?? '';
+    // selectedCategory = data['category'] ?? '';
     _pagesController.text = data['pages'] ?? '';
     _stocksController.text = data['stocks'] ?? '';
     _locationController.text = data['location'] ?? '';
@@ -67,8 +61,8 @@ class _AddBookDialogState extends State<AddBookDialog> {
     'unsigned_uploads',
     cache: false,
   );
-  // Color _selectedColor = Colors.blue;
-  // Color _colorr = Colors.blue;
+  Color _selectedColor = Colors.blue;
+  Color _colorr = Colors.blue;
   XFile? image;
   final _bookNameController = TextEditingController();
   final _bookIdController = TextEditingController();
@@ -79,14 +73,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
   final _locationController = TextEditingController();
   final db = DataBaseService();
   final _formKey = GlobalKey<FormState>();
-  String? selectedCategory;
-  List<String> categories = [
-    'Fiction',
-    'Non-Fiction',
-    'Science',
-    'History',
-    'Biography',
-  ];
+  Category? selectedCategory;
   final TextEditingController newCategoryController = TextEditingController();
 
   Future<void> _pickImage() async {
@@ -116,59 +103,6 @@ class _AddBookDialogState extends State<AddBookDialog> {
     }
   }
 
-  Future<void> _loadCategories() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedCategories = prefs.getStringList('categories');
-    if (savedCategories != null && savedCategories.isNotEmpty) {
-      setState(() {
-        categories = savedCategories;
-      });
-    }
-  }
-
-  Future<void> _saveCategories() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('categories', categories);
-  }
-
-  void _addNewCategory() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Add New Category'),
-          content: TextField(
-            controller: newCategoryController,
-            decoration: const InputDecoration(hintText: 'Enter new category'),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Add'),
-              onPressed: () async {
-                final newCat = newCategoryController.text.trim();
-                if (newCat.isNotEmpty && !categories.contains(newCat)) {
-                  setState(() {
-                    categories.add(newCat);
-                    selectedCategory = newCat;
-                  });
-                  await _saveCategories();
-                  newCategoryController.clear();
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate() ||
         _uploadedImageUrl == null ||
@@ -193,24 +127,24 @@ class _AddBookDialogState extends State<AddBookDialog> {
       bookId: _bookIdController.text.trim(),
       authorName: _authorNameController.text.trim(),
       description: _descriptionController.text.trim(),
-      category: selectedCategory ?? '',
+      category: selectedCategory?.name ?? '',
       pages: _pagesController.text.trim(),
       stocks: _stocksController.text.trim(),
       location: _locationController.text.trim(),
-      // color: _selectedColor.toString()
+      color: _selectedColor.toString(),
     );
     Map<String, dynamic> updatedBook = {
       'uid': widget.bookData?['uid'] ?? '',
-      'bookname': _bookNameController.text.trim(),
-      'bookid': _bookIdController.text.trim(),
-      'authername': _authorNameController.text.trim(),
+      'bookName': _bookNameController.text.trim(),
+      'bookId': _bookIdController.text.trim(),
+      'authorName': _authorNameController.text.trim(),
       'description': _descriptionController.text.trim(),
-      'category': selectedCategory,
+      'category': selectedCategory!.name,
       'pages': _pagesController.text.trim(),
       'stocks': _stocksController.text.trim(),
       'location': _locationController.text.trim(),
       'imgUrl': _uploadedImageUrl!,
-      // 'color':_selectedColor.toString()
+      'color': _selectedColor.toString(),
     };
     widget.isUpdate == true
         ? context.read<BookBloc>().add(EditBook(updatedBook))
@@ -226,35 +160,35 @@ class _AddBookDialogState extends State<AddBookDialog> {
     );
   }
 
-  // void _openColorPicker() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text('Pick a Color'),
-  //         content: SingleChildScrollView(
-  //           child: ColorPicker(
-  //             pickerColor: _selectedColor,
-  //             onColorChanged: (color) {
-  //               _colorr = color;
-  //             },
-  //           ),
-  //         ),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: Text('OK'),
-  //             onPressed: () {
-  //               setState(() {
-  //                 _selectedColor = _colorr;
-  //               });
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void _openColorPickerbook() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Pick a Color'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: _selectedColor,
+              onColorChanged: (color) {
+                _colorr = color;
+              },
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                setState(() {
+                  _selectedColor = _colorr;
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -301,26 +235,26 @@ class _AddBookDialogState extends State<AddBookDialog> {
                         spacing: 20,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          //   children: [
-                          //     const Text(
-                          //       'cover:  ',
-                          //       style: TextStyle(fontSize: 16),
-                          //     ),
-                          //     InkWell(
-                          //       onTap: () => _openColorPicker(),
-                          //       child: Container(
-                          //         decoration: BoxDecoration(
-                          //           border: Border.all(),
-                          //           color: _selectedColor,
-                          //         ),
-                          //         height: 50,
-                          //         width: 50,
-                          //       ),
-                          //     ),
-                          //   ],
-                          // ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'cover:  ',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              InkWell(
+                                onTap: () => _openColorPickerbook(),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(),
+                                    color: _selectedColor,
+                                  ),
+                                  height: 50,
+                                  width: 50,
+                                ),
+                              ),
+                            ],
+                          ),
                           CustomCounter(
                             controller: _stocksController,
                             title: 'Stocks:  ',
@@ -345,46 +279,77 @@ class _AddBookDialogState extends State<AddBookDialog> {
                   hint: 'Author Name',
                   controller: _authorNameController,
                 ),
+
                 Row(
                   children: [
                     Flexible(
                       flex: 5,
-                      // width: 120,
-                      // height: 50,
-                      child: DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          hintText: 'category',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                        ),
-                        value: selectedCategory,
-                        items:
-                            categories.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedCategory = newValue;
-                          });
+                      child: BlocBuilder<CategoryBloc, CategoryState>(
+                        builder: (context, state) {
+                          if (state is CategoryLoading) {
+                            return Center(child: CircularProgressIndicator());
+                          } else if (state is CategoryLoaded) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: DropdownButton<Category>(
+                                isExpanded: true,
+                                underline: SizedBox(),
+                                value: selectedCategory,
+                                hint: Text('    Select Category'),
+                                items:
+                                    state.categories
+                                        .map(
+                                          (cat) => DropdownMenuItem<Category>(
+                                            value: cat,
+                                            child: Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  backgroundColor: cat.color,
+                                                  backgroundImage:
+                                                      cat.imageUrl.isNotEmpty
+                                                          ? NetworkImage(
+                                                            cat.imageUrl,
+                                                          )
+                                                          : null,
+                                                  radius: 14,
+                                                  child:
+                                                      cat.imageUrl.isEmpty
+                                                          ? Icon(
+                                                            Icons
+                                                                .category_outlined,
+                                                            color: Colors.white,
+                                                            size: 16,
+                                                          )
+                                                          : null,
+                                                ),
+                                                SizedBox(width: 10),
+                                                Text(cat.name),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                onChanged: (cat) {
+                                  setState(() {
+                                    selectedCategory = cat;
+                                  });
+                                },
+                              ),
+                            );
+                          } else if (state is CategoryError) {
+                            return Text(
+                              state.message,
+                              style: TextStyle(color: Colors.red),
+                            );
+                          }
+                          return Container();
                         },
                       ),
                     ),
-                    SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: IconButton(
-                        onPressed: _addNewCategory,
-                        icon: Icon(Icons.add),
-                      ),
-                    ),
+                    IconButton(onPressed: () => showAddCategoryDialog(context), icon:Icon(Icons.add) )
                   ],
                 ),
 
@@ -396,7 +361,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
                 BookForm(hint: 'Location', controller: _locationController),
                 CustomLongButton(
                   title: widget.isUpdate == true ? 'Update' : 'Add',
-                  ontap: ()  {
+                  ontap: () {
                     _onSubmit(context);
                   },
                 ),

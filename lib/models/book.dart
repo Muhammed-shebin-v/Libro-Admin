@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
 class Book {
+  final String? uid;
   final String bookName;
   final String bookId;
   final String authorName;
@@ -8,9 +12,14 @@ class Book {
   final String stocks;
   final String location;
   final String imgUrl;
-  // final String color;
+  final String color;
+  final int score;
+  final String date;
 
   Book({
+    this.uid,
+    this.score = 0,
+    this.date = '',
     required this.bookName,
     required this.bookId,
     required this.authorName,
@@ -20,27 +29,32 @@ class Book {
     required this.stocks,
     required this.location,
     required this.imgUrl,
-    // required this.color
+    required this.color
+    
   });
 
-  factory Book.fromMap(Map<String, dynamic> data) {
+  factory Book.fromMap(DocumentSnapshot doc) {
+    final data =doc.data () as Map<String, dynamic>;
     return Book(
+      uid: doc.id,
       bookName: data['bookname'] ?? '',
       bookId: data['bookId'] ?? '',
       authorName: data['authorName'] ?? '',
       description: data['description'] ?? '',
       category: data['category'] ?? '',
-      pages: data['pages'] ?? 0,
-      stocks: data['stocks'] ?? 0,
+      pages: data['pages'] ?? '',
+      stocks: data['stocks'] ?? '',
       location: data['location'] ?? '',
       imgUrl: data['imgUrl']??'',
-      // color: data['color']?? '',
+      color:(data['color'] ?? '0xff2196f3') ??0xff2196f3,
+      score: data['score'] ?? 0,
+      date: data['date']?.toDate().toString() ?? '',
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'bookname': bookName,
+      'bookName': bookName,
       'bookId': bookId,
       'authorName': authorName,
       'description': description,
@@ -49,7 +63,8 @@ class Book {
       'stocks': stocks,
       'location': location,
       'imgUrl':imgUrl,
-      // 'color':color
+      'date': DateTime.now(),
+      'color': color,
     };
   }
 }

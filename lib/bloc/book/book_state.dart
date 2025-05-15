@@ -35,3 +35,7 @@ class BookAdded extends BookState {
   final Book book;
   const BookAdded(this.book);
 }
+class SortState extends BookState {
+  final String selectedSort;
+  SortState(this.selectedSort);
+}

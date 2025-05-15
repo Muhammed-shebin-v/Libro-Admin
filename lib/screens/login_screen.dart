@@ -8,14 +8,9 @@ import 'package:libro_admin/widgets/long_button.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
 
   final _passwordController = TextEditingController();
@@ -25,12 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final String predefinedUsername = "LibroAdmin@gmail.com";
 
   final String predefinedPassword = "123456789";
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 
   void _login(context) async {
     if (_emailController.text == predefinedUsername &&
@@ -80,10 +69,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Gap(30),
+                        const Gap(30),
                         Text('Welcome Admin!', style: AppFonts.heading1),
-                        Text('we happy to see you,sign in to your admin account'),
-                        Gap(50),
+                        const Text('we happy to see you,sign in to your admin account'),
+                        const Gap(50),
                         CustomForm(
                           title: 'Email',
                           hint: 'enter email',
@@ -114,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
 
-                        Gap(30),
+                        const Gap(30),
                         CustomLongButton(
                           title: 'Log in',
                           ontap: () async {
@@ -130,14 +119,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               Flexible(
                 flex: 3,
-                
                   child: Lottie.asset(
                     'lib/assets/Animation - 1742030119292.json',
                     height: 200,
                     fit: BoxFit.fill,
                   ),
                 ),
-            
             ],
           ),
         ),

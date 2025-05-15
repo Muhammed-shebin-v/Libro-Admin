@@ -85,7 +85,7 @@ class AdScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           filled: true,
-                          fillColor:  AppColors.grey,
+                          fillColor: AppColors.grey,
                         ),
                       ),
                       Align(
@@ -108,7 +108,6 @@ class AdScreen extends StatelessWidget {
                   ),
                 ),
               ),
-               
             ],
           ),
         ),

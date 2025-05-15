@@ -14,6 +14,10 @@ class BookBloc extends Bloc<BookEvent, BookState> {
     on<DeleteBook>(_onDeleteBook);
     on<EditBook>(_onEditBook);
     on<AddBook>(_onAddBook);
+    on<LoadBooksAlphabetical>(_loadAlphabetical);
+    on<LoadBooksLatest>(_loadLatest);
+    on<SortChanged>(_sortchanged);
+
   }
 
   Future<void> _onLoadBooks(LoadBooks event, Emitter<BookState> emit) async {
@@ -73,6 +77,43 @@ Future<void> _onAddBook(AddBook event, Emitter<BookState> emit) async {
       }
     }
   }
-}
+  Future<void> _loadAlphabetical(
+      LoadBooksAlphabetical event, Emitter<BookState> emit) async {
+    emit(BookLoading());
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('books').orderBy('bookName').get();
+
+      final books = snapshot.docs.map((doc) =>  doc.data()) .toList();
+      emit(BookLoaded(books));
+    } catch (e) {
+      emit(BookError('Failed to load books'));
+    }
+  }
+Future<void> _loadLatest(LoadBooksLatest event, Emitter<BookState> emit) async {
+    emit(BookLoading());
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('books')
+          .orderBy('date', descending: true)
+          .get();
+
+      final books = snapshot.docs.map((doc) =>  doc.data()) .toList();
+      emit(BookLoaded(books));
+    } catch (e) {
+      emit(BookError('Failed to load books'));
+    }
+  }
+
+    Future<void>_sortchanged(
+      SortChanged event, Emitter<BookState> emit) async {
+      emit(SortState(event.newSort));
+       if (event.newSort == 'Alphabetical') {
+      add(LoadBooksAlphabetical());
+    } else if (event.newSort == 'Latest') {
+      add(LoadBooksLatest());
+    }
+    }
+  }
+
  
 

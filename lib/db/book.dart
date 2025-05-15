@@ -8,20 +8,8 @@ class DataBaseService {
 
   Future<bool> create(Book book) async {
     try {
-      DocumentReference docRef = await _fb
-          .add({
-            'bookname': book.bookName,
-            'bookid': book.bookId,
-            'authername': book.authorName,
-            'description': book.description,
-            'category': book.category,
-            'pages': book.pages,
-            'stocks': book.stocks,
-            'location': book.location,
-            'imgUrl': book.imgUrl,
-            'date':DateTime.now(),
-            // 'color':book.color
-          });
+       DocumentReference docRef = await _fb
+          .add(book.toMap());
       await docRef.update({'uid': docRef.id});
       log('created new');
       return true;
@@ -41,9 +29,9 @@ class DataBaseService {
   Future<void> updateBook( book) async {
     try {
       await _fb.doc(book['uid']).update({
-        'bookname': book['bookname'],
-        'bookid': book['bookid'],
-        'authername': book['authername'],
+        'bookName': book['bookName'],
+        'bookId': book['bookId'],
+        'authorName': book['authorName'],
         'description': book['description'],
         'category': book['category'],
         'pages': book['pages'],

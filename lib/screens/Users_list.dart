@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:libro_admin/bloc/user/users_bloc.dart';
 import 'package:libro_admin/bloc/user/users_event.dart';
 import 'package:libro_admin/bloc/user/users_state.dart';
-import 'package:libro_admin/models/user.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/filter.dart';
 import 'package:libro_admin/widgets/long_button.dart';
@@ -53,174 +50,202 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
           } else if (state is UserError) {
             return Center(child: Text(state.message));
           } else if (state is UserLoaded) {
-            final user=state.selectedUser;
+            final user = state.selectedUser;
             return Row(
               children: [
                 Expanded(flex: 4, child: _buildMainContent(state)),
-                SizedBox(width: 400,
-                 child:Container(
-      decoration: BoxDecoration(
-        color: AppColors.color30,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(),
-      ),
-      margin: const EdgeInsets.all(10),
-      padding: const EdgeInsets.all(20),
-      child:
-          user == null
-              ? Center(
-                child: Text(
-                  'Select a user to view details',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                SizedBox(
+                  width: 400,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.color30,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(),
+                    ),
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(20),
+                    child:
+                        user == null
+                            ? Center(
+                              child: Text(
+                                'Select a user to view details',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            )
+                            : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.notifications),
+                                        const SizedBox(width: 8),
+                                        Text(user['fullName']),
+                                      ],
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () {},
+                                      tooltip: 'block',
+                                    ),
+                                  ],
+                                ),
+                                const Divider(),
+                                Center(
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child:
+                                            user['imgUrl'] != null
+                                                ? ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(80),
+                                                  child: Image.network(
+                                                    user['imgUrl'],
+                                                    fit: BoxFit.fill,
+                                                  ),
+                                                )
+                                                : null,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        user['username'],
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        user['email'],
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 20),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.chat_bubble_outline,
+                                      ),
+                                      onPressed: () {},
+                                      iconSize: 28,
+                                    ),
+                                    const SizedBox(width: 20),
+                                    IconButton(
+                                      icon: const Icon(Icons.phone),
+                                      onPressed: () {},
+                                      iconSize: 28,
+                                    ),
+                                    const SizedBox(width: 20),
+                                    IconButton(
+                                      icon: const Icon(Icons.email_outlined),
+                                      onPressed: () {},
+                                      iconSize: 28,
+                                    ),
+                                  ],
+                                ),
+
+                                const Gap(20),
+
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: _buildInfoSection('MemberShip', [
+                                        InfoItem('Type', 'Platinum'),
+                                        InfoItem('Exp', '12/2/2025'),
+                                      ]),
+                                    ),
+                                    Expanded(
+                                      child: _buildInfoSection('Score', [
+                                        InfoItem(
+                                          'May',
+                                          user['score'].toString(),
+                                        ),
+                                        InfoItem(
+                                          'Total',
+                                          user['score'].toString(),
+                                        ),
+                                      ]),
+                                    ),
+                                  ],
+                                ),
+
+                                const Gap(20),
+
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: _buildInfoSection('Address', [
+                                        InfoItem('', user['address']),
+                                      ]),
+                                    ),
+                                    Expanded(
+                                      child: _buildInfoSection('Phone', [
+                                        InfoItem('', user['phoneNumber']),
+                                      ]),
+                                    ),
+                                  ],
+                                ),
+
+                                const Gap(20),
+                                const Text(
+                                  'Current Borrows',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Gap(10),
+                                Container(
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.color60,
+                                    border: Border.all(),
+                                  ),
+                                ),
+                                const Text(
+                                  'Total Fine Collected',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Gap(10),
+                                Container(
+                                  height: 150,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.color60,
+                                    border: Border.all(),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                CustomLongButton(
+                                  title: 'Show all Info',
+                                  ontap: () {},
+                                ),
+                              ],
+                            ),
+                  ),
                 ),
-              )
-              : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.notifications),
-                          const SizedBox(width: 8),
-                          Text(user['fullName']),
-                        ],
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () {},
-                        tooltip: 'block',
-                      ),
-                    ],
-                  ),
-                  const Divider(),
-                  Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            shape: BoxShape.circle,
-                          ),
-                          child: user['imgUrl']!=null?
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(80),
-                            child: Image.network(user['imgUrl'],fit: BoxFit.fill,)):null
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          user['username'],
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          user['email'],
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.chat_bubble_outline),
-                        onPressed: () {},
-                        iconSize: 28,
-                      ),
-                      const SizedBox(width: 20),
-                      IconButton(
-                        icon: const Icon(Icons.phone),
-                        onPressed: () {},
-                        iconSize: 28,
-                      ),
-                      const SizedBox(width: 20),
-                      IconButton(
-                        icon: const Icon(Icons.email_outlined),
-                        onPressed: () {},
-                        iconSize: 28,
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _buildInfoSection('MemberShip', [
-                          InfoItem('Type', 'Platinum'),
-                          InfoItem('Exp', '12/2/2025'),
-                        ]),
-                      ),
-                      Expanded(
-                        child: _buildInfoSection('Score', [
-                          InfoItem('May', user['score'].toString()),
-                          InfoItem('Total',user['score'].toString()),
-                        ]),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: _buildInfoSection('Address', [
-                          InfoItem('', user['address']),
-                        ]),
-                      ),
-                      Expanded(
-                        child: _buildInfoSection('Phone', [
-                          InfoItem('', user['phoneNumber']),
-                        ]),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Current Borrows',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Gap(10),
-                  Container(
-                    height: 100,
-                    decoration: 
-                    BoxDecoration(
-                      color: AppColors.color60,
-                      border: Border.all()
-                    ),
-                  ),
-                  const Text(
-                    'Total Fine Collected',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Gap(10),
-                  Container(
-                    height: 150,
-                    decoration: 
-                    BoxDecoration(
-                      color: AppColors.color60,
-                      border: Border.all()
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                 CustomLongButton(title: 'Show all Info', ontap: (){})
-                ],
-              ),
-    )),
               ],
             );
           }
@@ -271,7 +296,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
             ],
           ),
 
-          //  FilterButton(filters: _filters,isBook: false,),
+          const Gap(10),
           FilterButton(
             filters: filterController2.filters,
             controller: filterController2,
@@ -321,16 +346,17 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
               itemBuilder: (context, index) {
                 final user = state.users[index];
                 bool isSelected =
-                    state.selectedUser != null && state.selectedUser!['uid'] == user['uid'];
-                    
+                    state.selectedUser != null &&
+                    state.selectedUser!['uid'] == user['uid'];
+
                 return InkWell(
                   onTap: () {
-                   context.read<UserBloc>().add(SelectUser(user));
+                    context.read<UserBloc>().add(SelectUser(user));
                     // setState(() {
                     //   selectedUser = user;
                     // });
                   },
-               
+
                   child: Container(
                     decoration: BoxDecoration(
                       color:
@@ -353,15 +379,23 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                   height: 40,
                                   width: 40,
                                   child: ClipRRect(
-                                    
                                     borderRadius: BorderRadius.circular(80),
-                                    child: user['imgUrl']==null?
-                                     Icon(
-                                      Icons.person,
-                                      size: 20,
-                                      color: const Color.fromARGB(255, 0, 0, 0),
-                                    
-                                    ):Image.network(user['imgUrl'],fit: BoxFit.fill,)
+                                    child:
+                                        user['imgUrl'] == null
+                                            ? Icon(
+                                              Icons.person,
+                                              size: 20,
+                                              color: const Color.fromARGB(
+                                                255,
+                                                0,
+                                                0,
+                                                0,
+                                              ),
+                                            )
+                                            : Image.network(
+                                              user['imgUrl'],
+                                              fit: BoxFit.fill,
+                                            ),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
@@ -385,8 +419,9 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                user['isBlock']==null?
-                                Text(user['username']):Text(user['isBlock'].toString())
+                                user['isBlock'] == null
+                                    ? Text(user['username'])
+                                    : Text(user['isBlock'].toString()),
                               ],
                             ),
                           ),
@@ -402,7 +437,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       ),
     );
   }
-
 
   Widget _buildTableHeader(String title, {int flex = 1}) {
     return Expanded(

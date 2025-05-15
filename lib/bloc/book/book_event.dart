@@ -29,3 +29,13 @@ class AddBook extends BookEvent {
   final Book book;
   AddBook(this.book);
 }
+class LoadBooksAlphabetical extends BookEvent {
+  const LoadBooksAlphabetical();
+}
+class LoadBooksLatest extends BookEvent {
+  const LoadBooksLatest();
+}
+class SortChanged extends BookEvent {
+  final String newSort;
+  SortChanged(this.newSort);
+}
