@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/category/categories_event.dart';
 import 'package:libro_admin/bloc/category/categories_state.dart';
 import 'package:libro_admin/models/category.dart';

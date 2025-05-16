@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 class CustomCounter extends StatelessWidget {
-  TextEditingController controller;
-  String title;
-  double width;
-  int maxLenght;
-  CustomCounter({
+  final TextEditingController controller;
+  final String title;
+  final double width;
+  final int maxLenght;
+  const CustomCounter({
     super.key,
     required this.controller,
     required this.title,

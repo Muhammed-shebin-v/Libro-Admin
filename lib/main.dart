@@ -8,7 +8,6 @@ import 'package:libro_admin/bloc/category/categories_bloc.dart';
 import 'package:libro_admin/bloc/category/categories_event.dart';
 import 'package:libro_admin/bloc/user/users_bloc.dart';
 import 'package:libro_admin/bloc/user/users_event.dart';
-import 'package:libro_admin/screens/category.dart';
 import 'package:libro_admin/screens/splash_screen.dart';
 import 'package:libro_admin/widgets/firebase_options.dart';
 

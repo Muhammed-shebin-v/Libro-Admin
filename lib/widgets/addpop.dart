@@ -9,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/category/categories_bloc.dart';
-import 'package:libro_admin/bloc/category/categories_event.dart';
 import 'package:libro_admin/bloc/category/categories_state.dart';
 import 'package:libro_admin/db/book.dart';
 import 'package:libro_admin/models/book.dart';
@@ -18,7 +17,6 @@ import 'package:libro_admin/widgets/add_category_dialog.dart';
 import 'package:libro_admin/widgets/bookform.dart';
 import 'package:libro_admin/widgets/counter.dart';
 import 'package:libro_admin/widgets/long_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddBookDialog extends StatefulWidget {
   final Map<String, dynamic>? bookData;

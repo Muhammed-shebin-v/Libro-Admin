@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class BookForm extends StatelessWidget {
-  String hint;
-  TextEditingController controller;
-  String? validation;
-  int? maxLines;
-  BookForm({
+  final String hint;
+  final TextEditingController controller;
+  final String? validation;
+  final int? maxLines;
+  const BookForm({
     super.key,
     required this.hint,
     required this.controller,

@@ -1,6 +1,3 @@
-import 'package:equatable/equatable.dart';
-
-// abstract class UserState {}
 abstract class UserState{
  const UserState();
 }
