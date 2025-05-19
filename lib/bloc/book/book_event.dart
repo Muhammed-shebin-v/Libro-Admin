@@ -39,3 +39,8 @@ class SortChanged extends BookEvent {
   final String newSort;
   SortChanged(this.newSort);
 }
+class PickImagesEvent extends BookEvent {}
+class UploadBookEvent extends BookEvent {
+  final String title;
+  UploadBookEvent(this.title);
+}

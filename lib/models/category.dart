@@ -34,7 +34,7 @@ class Category {
     return {
       'name': name,
       'imageUrl': imageUrl,
-      'color': '0x${color.value.toRadixString(16).padLeft(8, '0')}',
+      'color': '0x${color.toARGB32().toRadixString(16).padLeft(8, '0')}',
       'location': location,
       'totalBooks': totalBooks,
     };

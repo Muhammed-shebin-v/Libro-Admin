@@ -39,3 +39,4 @@ class SortState extends BookState {
   final String selectedSort;
   SortState(this.selectedSort);
 }
+class BookUploaded extends BookState {}

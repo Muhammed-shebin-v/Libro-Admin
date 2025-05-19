@@ -7,10 +7,10 @@ import 'package:gap/gap.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
-import 'package:libro_admin/screens/all_categories.dart';
 import 'package:libro_admin/screens/book_details.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/addpop.dart';
+import 'package:libro_admin/widgets/all_categories.dart';
 import 'package:libro_admin/widgets/filter.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
 
@@ -266,7 +266,9 @@ class LibraryManagementScreen extends StatelessWidget {
                                               height: 12,
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: Colors.red,
+                                                color:
+                                                 book['color'] != null ?  Color(book['color']): Colors.red,
+                                                //  Colors.red
                                               ),
                                             ),
                                             const SizedBox(width: 4),

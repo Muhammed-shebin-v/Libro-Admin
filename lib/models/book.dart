@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 
 class Book {
   final String? uid;
@@ -10,10 +11,11 @@ class Book {
   final String pages;
   final String stocks;
   final String location;
-  final String imgUrl;
-  final String color;
+  // final String imgUrl;
+  final Color color;
   final int score;
   final String date;
+  final List<String>? imageUrls;
 
   Book({
     this.uid,
@@ -27,10 +29,10 @@ class Book {
     required this.pages,
     required this.stocks,
     required this.location,
-    required this.imgUrl,
-    required this.color
-    
-  });
+    // required this.imgUrl,
+    required this.color,
+    this.imageUrls,
+    });
 
   factory Book.fromMap(DocumentSnapshot doc) {
     final data =doc.data () as Map<String, dynamic>;
@@ -44,10 +46,11 @@ class Book {
       pages: data['pages'] ?? '',
       stocks: data['stocks'] ?? '',
       location: data['location'] ?? '',
-      imgUrl: data['imgUrl']??'',
-      color:(data['color'] ?? '0xff2196f3') ??0xff2196f3,
+      // imgUrl: data['imgUrl']??'',
+      color: Color(int.parse(data['color'], radix: 16)),
       score: data['score'] ?? 0,
       date: data['date']?.toDate().toString() ?? '',
+      imageUrls: List<String>.from(data['imageUrls'] ?? []),
     );
   }
 
@@ -61,9 +64,10 @@ class Book {
       'pages': pages,
       'stocks': stocks,
       'location': location,
-      'imgUrl':imgUrl,
+      // 'imgUrl':imgUrl,
       'date': DateTime.now(),
-      'color': color,
+      'color': color.toARGB32(),
+      'imageUrls': imageUrls,
     };
   }
 }

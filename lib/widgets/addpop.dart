@@ -46,11 +46,11 @@ class _AddBookDialogState extends State<AddBookDialog> {
     _pagesController.text = data['pages'] ?? '';
     _stocksController.text = data['stocks'] ?? '';
     _locationController.text = data['location'] ?? '';
-    _uploadedImageUrl = data['imgUrl'] ?? '';
+    // _uploadedImageUrl = data['imgUrl'] ?? '';
     // _selectedColor=Color(colorValue);
-    if (_uploadedImageUrl != null && _uploadedImageUrl!.isNotEmpty) {
-      image = XFile(_uploadedImageUrl!);
-    }
+    // if (_uploadedImageUrl != null && _uploadedImageUrl!.isNotEmpty) {
+    //   image = XFile(_uploadedImageUrl!);
+    // }
   }
 
   String? _uploadedImageUrl;
@@ -103,7 +103,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
 
   void _onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate() ||
-        _uploadedImageUrl == null ||
+        // _uploadedImageUrl == null ||
         selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -120,7 +120,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
     }
 
     final book = Book(
-      imgUrl: _uploadedImageUrl!,
+      // imgUrl: _uploadedImageUrl!,
       bookName: _bookNameController.text.trim(),
       bookId: _bookIdController.text.trim(),
       authorName: _authorNameController.text.trim(),
@@ -129,7 +129,9 @@ class _AddBookDialogState extends State<AddBookDialog> {
       pages: _pagesController.text.trim(),
       stocks: _stocksController.text.trim(),
       location: _locationController.text.trim(),
-      color: _selectedColor.toString(),
+      color: _selectedColor,
+
+
     );
     Map<String, dynamic> updatedBook = {
       'uid': widget.bookData?['uid'] ?? '',
@@ -141,8 +143,8 @@ class _AddBookDialogState extends State<AddBookDialog> {
       'pages': _pagesController.text.trim(),
       'stocks': _stocksController.text.trim(),
       'location': _locationController.text.trim(),
-      'imgUrl': _uploadedImageUrl!,
-      'color': _selectedColor.toString(),
+      // 'imgUrl': _uploadedImageUrl!,
+      'color': _selectedColor.toARGB32(),
     };
     widget.isUpdate == true
         ? context.read<BookBloc>().add(EditBook(updatedBook))
@@ -215,7 +217,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       InkWell(
-                        onTap: () => _pickImage(),
+                        onTap: () => context.read<BookBloc>().add(PickImagesEvent()),
                         child: Container(
                           width: 110,
                           height: 140,

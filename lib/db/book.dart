@@ -6,10 +6,12 @@ import 'package:libro_admin/models/book.dart';
 
 class DataBaseService {
 
-  Future<bool> create(Book book) async {
+  Future<bool> create(Book book,List<String>imageUrls) async {
     try {
+      log('sdfdd');
+      final updatedBokk=Book(bookName: book.bookName, bookId: book.bookId, authorName: book.authorName, description: book.description, category: book.category, pages: book.pages, stocks: book.stocks, location: book.location, color: book.color,imageUrls: imageUrls);
        DocumentReference docRef = await _fb
-          .add(book.toMap());
+          .add(updatedBokk.toMap());
       await docRef.update({'uid': docRef.id});
       log('created new');
       return true;
@@ -28,7 +30,8 @@ class DataBaseService {
  
   Future<void> updateBook( book) async {
     try {
-      await _fb.doc(book['uid']).update({
+      await _fb.doc(book['uid']).update(
+        {
         'bookName': book['bookName'],
         'bookId': book['bookId'],
         'authorName': book['authorName'],
@@ -40,7 +43,9 @@ class DataBaseService {
         'imgUrl': book['imgUrl'],
         'date': DateTime.now(),
         'color':book['color']
-      });
+      }
+        // book.toMap(),
+      );
       // log('Updated book with ID: ${book.uid}');
     } catch (e) {
       log('Error updating book: ${e.toString()}');
