@@ -4,6 +4,7 @@ import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/category/categories_bloc.dart';
 import 'package:libro_admin/bloc/category/categories_state.dart';
+import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/add_category_dialog.dart';
 
 class AllCategoriesScreen extends StatelessWidget {
@@ -47,7 +48,7 @@ class AllCategoriesScreen extends StatelessWidget {
                           cat.imageUrl.isEmpty
                               ? Icon(
                                 Icons.category_outlined,
-                                color: Colors.white,
+                                color:AppColors.white,
                               )
                               : null,
                     ),
@@ -77,7 +78,7 @@ class AllCategoriesScreen extends StatelessWidget {
             return Center(
               child: Text(
                 'Error: ${state.message}',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: AppColors.secondary),
               ),
             );
           }

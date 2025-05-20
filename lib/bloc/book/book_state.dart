@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:libro_admin/models/book.dart';
 
 abstract class BookState {
@@ -39,4 +40,7 @@ class SortState extends BookState {
   final String selectedSort;
   SortState(this.selectedSort);
 }
-class BookUploaded extends BookState {}
+class BookImagesSelected extends BookState {
+  final List<XFile> images;
+  BookImagesSelected(this.images);
+}

@@ -27,5 +27,7 @@ class AppColors{
   static const Color color10 = Color(0xFFFFC869);
   static const Color secondary = Colors.red;
   static const Color grey=Color.fromARGB(255, 224, 222, 222);
+  static const Color white=Colors.white;
+  static const Color black=Colors.black;
 }
 

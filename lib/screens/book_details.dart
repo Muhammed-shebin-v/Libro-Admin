@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:libro_admin/bloc/book/book_bloc.dart';
-import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/addpop.dart';
+import 'package:libro_admin/widgets/custom_dialog.dart';
 
 class BookDetailsWidget extends StatelessWidget {
   final Map<String, dynamic>? book;
@@ -35,14 +33,14 @@ class BookDetailsWidget extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.edit),
                         onPressed: () {
-                          showAddBookDialog(context, book: book,true);
+                          showAddBookDialog(context, book: book, true);
                         },
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
                           // db.delete(book['uid'], context);
-                          showCustomDialog(context);
+                          showCustomDialog(context: context, bookId: book?['uid']);
                         },
                       ),
                     ],
@@ -51,21 +49,38 @@ class BookDetailsWidget extends StatelessWidget {
                   Center(
                     child: Column(
                       children: [
-                        Container(
-                          height: 120,
-                          width: 80,
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade200,
-                            borderRadius: BorderRadius.circular(4),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                book?['imgUrl'] ??
-                                    'https://bkacontent.com/wp-content/uploads/2016/06/Depositphotos_31146757_l-2015.jpg',
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                        SizedBox(
+                          height: 200,
+                          child:
+                              book?['imageUrls'] == null
+                                  ? const Text('No images selected.')
+                                  : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: book?['imageUrls'].length,
+                                    itemBuilder: (context, index) {
+                                      final selectedImage =
+                                          book?['imageUrls'][index];
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          width: 110,
+                                          height: 140,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: Image.network(
+                                            selectedImage,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                         ),
+
                         const SizedBox(height: 8),
                         Text(
                           book?['bookName'] ?? 'null',
@@ -103,7 +118,7 @@ class BookDetailsWidget extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const Icon(Icons.star, color: Colors.amber),
+                            const Icon(Icons.star, color: AppColors.color10),
                           ],
                         ),
                         Column(
@@ -115,7 +130,7 @@ class BookDetailsWidget extends StatelessWidget {
                                   height: 12,
                                   decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Colors.red,
+                                    color: AppColors.secondary,
                                   ),
                                 ),
                                 Text('  Not Available'),
@@ -163,10 +178,10 @@ class BookDetailsWidget extends StatelessWidget {
                         (index) => Column(
                           children: [
                             CircleAvatar(
-                              backgroundColor: Colors.grey.shade800,
+                              backgroundColor: AppColors.grey,
                               child: const Icon(
                                 Icons.person,
-                                color: Colors.white,
+                                color: AppColors.white,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -199,8 +214,8 @@ class BookDetailsWidget extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEFD28D),
-                        foregroundColor: Colors.black,
+                        backgroundColor: AppColors.color10,
+                        foregroundColor:AppColors.black ,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -213,30 +228,4 @@ class BookDetailsWidget extends StatelessWidget {
     );
   }
 
-  Future<void> showCustomDialog(BuildContext contextS) async {
-    return showDialog(
-      context: contextS,
-      builder:
-          (context) => AlertDialog(
-            title: Text("Delete Book"),
-            content: Text("Do you really want to Delete this Book?"),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text("Cancel"),
-              ),
-              TextButton(
-                onPressed: () async {
-                  context.read<BookBloc>().add(DeleteBook(book?['uid']));
-                  Navigator.pop(context);
-                },
-                child: Text("delete", style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-    );
-  }
 }

@@ -71,7 +71,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                 'Select a user to view details',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.grey,
+                                  color: AppColors.grey,
                                 ),
                               ),
                             )
@@ -104,7 +104,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                         width: 100,
                                         height: 100,
                                         decoration: BoxDecoration(
-                                          color: Colors.grey,
+                                          color: AppColors.grey,
                                           shape: BoxShape.circle,
                                         ),
                                         child:
@@ -129,7 +129,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                       ),
                                       Text(
                                         user['email'],
-                                        style: TextStyle(color: Colors.grey),
+                                        style: TextStyle(color: AppColors.grey),
                                       ),
                                     ],
                                   ),
@@ -277,8 +277,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     label: const Text('Sort'),
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE8E8E8),
-                      foregroundColor: Colors.black,
+                      backgroundColor: AppColors.grey,
+                      foregroundColor: AppColors.black,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -287,8 +287,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                     label: const Text('Filter'),
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE8E8E8),
-                      foregroundColor: Colors.black,
+                      backgroundColor: AppColors.grey,
+                      foregroundColor: AppColors.black,
                     ),
                   ),
                 ],
@@ -363,7 +363,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                           isSelected
                               ? AppColors.color10
                               : (index % 2 == 0
-                                  ? Colors.white
+                                  ? AppColors.white
                                   : AppColors.color60),
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -385,12 +385,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                             ? Icon(
                                               Icons.person,
                                               size: 20,
-                                              color: const Color.fromARGB(
-                                                255,
-                                                0,
-                                                0,
-                                                0,
-                                              ),
+                                              color: AppColors.black
                                             )
                                             : Image.network(
                                               user['imgUrl'],
@@ -414,7 +409,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                   width: 12,
                                   height: 12,
                                   decoration: const BoxDecoration(
-                                    color: Colors.red,
+                                    color: AppColors.secondary,
                                     shape: BoxShape.circle,
                                   ),
                                 ),

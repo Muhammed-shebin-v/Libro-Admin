@@ -8,11 +8,13 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
+import 'package:libro_admin/bloc/book/book_state.dart';
 import 'package:libro_admin/bloc/category/categories_bloc.dart';
 import 'package:libro_admin/bloc/category/categories_state.dart';
 import 'package:libro_admin/db/book.dart';
 import 'package:libro_admin/models/book.dart';
 import 'package:libro_admin/models/category.dart';
+import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/add_category_dialog.dart';
 import 'package:libro_admin/widgets/bookform.dart';
 import 'package:libro_admin/widgets/counter.dart';
@@ -42,18 +44,11 @@ class _AddBookDialogState extends State<AddBookDialog> {
     _bookIdController.text = data['bookId'] ?? '';
     _authorNameController.text = data['authorName'] ?? '';
     _descriptionController.text = data['description'] ?? '';
-    // selectedCategory = data['category'] ?? '';
     _pagesController.text = data['pages'] ?? '';
     _stocksController.text = data['stocks'] ?? '';
     _locationController.text = data['location'] ?? '';
-    // _uploadedImageUrl = data['imgUrl'] ?? '';
-    // _selectedColor=Color(colorValue);
-    // if (_uploadedImageUrl != null && _uploadedImageUrl!.isNotEmpty) {
-    //   image = XFile(_uploadedImageUrl!);
-    // }
   }
 
-  String? _uploadedImageUrl;
   final cloudinary = CloudinaryPublic(
     'dwzeuyi12',
     'unsigned_uploads',
@@ -61,7 +56,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
   );
   Color _selectedColor = Colors.blue;
   Color _colorr = Colors.blue;
-  XFile? image;
+
   final _bookNameController = TextEditingController();
   final _bookIdController = TextEditingController();
   final _authorNameController = TextEditingController();
@@ -73,33 +68,6 @@ class _AddBookDialogState extends State<AddBookDialog> {
   final _formKey = GlobalKey<FormState>();
   Category? selectedCategory;
   final TextEditingController newCategoryController = TextEditingController();
-
-  Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
-    setState(() {
-      image = pickedFile;
-    });
-    if (pickedFile != null) {
-      await _uploadToCloudinary(File(pickedFile.path));
-    }
-  }
-
-  Future<void> _uploadToCloudinary(File imageFile) async {
-    try {
-      CloudinaryResponse response = await cloudinary.uploadFile(
-        CloudinaryFile.fromFile(
-          imageFile.path,
-          resourceType: CloudinaryResourceType.Image,
-        ),
-      );
-      _uploadedImageUrl = response.secureUrl;
-      log("Image Uploaded: $_uploadedImageUrl");
-    } catch (e) {
-      log('Cloudinary upload error: $e');
-    }
-  }
 
   void _onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate() ||
@@ -130,8 +98,6 @@ class _AddBookDialogState extends State<AddBookDialog> {
       stocks: _stocksController.text.trim(),
       location: _locationController.text.trim(),
       color: _selectedColor,
-
-
     );
     Map<String, dynamic> updatedBook = {
       'uid': widget.bookData?['uid'] ?? '',
@@ -216,20 +182,12 @@ class _AddBookDialogState extends State<AddBookDialog> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      InkWell(
-                        onTap: () => context.read<BookBloc>().add(PickImagesEvent()),
-                        child: Container(
-                          width: 110,
-                          height: 140,
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child:
-                              image != null
-                                  ? Image.network(image!.path, fit: BoxFit.fill)
-                                  : Icon(Icons.image),
-                        ),
+                      IconButton(
+                        icon: Icon(Icons.add_a_photo),
+
+                        onPressed:
+                            () =>
+                                context.read<BookBloc>().add(PickImagesEvent()),
                       ),
                       Column(
                         spacing: 20,
@@ -271,6 +229,46 @@ class _AddBookDialogState extends State<AddBookDialog> {
                       ),
                     ],
                   ),
+                ),
+                BlocBuilder<BookBloc, BookState>(
+                  builder: (context, state) {
+                    List<XFile> images = [];
+
+                    if (state is BookImagesSelected) {
+                      images = state.images;
+                    }
+
+                    return SizedBox(
+                      height: 200,
+                      child:
+                          images.isEmpty
+                              ? const Text('No images selected.')
+                              :
+                              
+                               ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: images.length,
+                                itemBuilder: (context, index) {
+                                  final selectedImage = images[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      width: 110,
+                                      height: 140,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Image.network(
+                                        selectedImage.path,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                    );
+                  },
                 ),
                 const Gap(20),
                 BookForm(hint: 'Book Name', controller: _bookNameController),
@@ -320,7 +318,8 @@ class _AddBookDialogState extends State<AddBookDialog> {
                                                           ? Icon(
                                                             Icons
                                                                 .category_outlined,
-                                                            color: Colors.white,
+                                                            color:
+                                                                AppColors.white,
                                                             size: 16,
                                                           )
                                                           : null,
@@ -342,14 +341,17 @@ class _AddBookDialogState extends State<AddBookDialog> {
                           } else if (state is CategoryError) {
                             return Text(
                               state.message,
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(color: AppColors.secondary),
                             );
                           }
                           return Container();
                         },
                       ),
                     ),
-                    IconButton(onPressed: () => showAddCategoryDialog(context), icon:Icon(Icons.add) )
+                    IconButton(
+                      onPressed: () => showAddCategoryDialog(context),
+                      icon: Icon(Icons.add),
+                    ),
                   ],
                 ),
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
@@ -62,10 +63,12 @@ class BookBloc extends Bloc<BookEvent, BookState> {
   }
 
   Future<void> _onAddBook(AddBook event, Emitter<BookState> emit) async {
-    if (state is BookLoaded) {
+    log('xssss');
+  
       emit(BookLoading());
       try {
         uploadedUrls.clear();
+
 
         for (var image in selectedImages) {
           final response = await cloudinary.uploadFile(
@@ -76,15 +79,17 @@ class BookBloc extends Bloc<BookEvent, BookState> {
           );
           uploadedUrls.add(response.secureUrl);
         }
+        log('Uploaded URLs: $uploadedUrls');
         if(uploadedUrls.isNotEmpty) {
         await db.create(event.book,uploadedUrls);
         final books = await db.getBooks();
         emit(BookLoaded(books));
+        selectedImages.clear();
         }
       } catch (e) {
         emit(BookError("Failed to add book: $e"));
       }
-    }
+    
   }
 
   Future<void> _onEditBook(EditBook event, Emitter<BookState> emit) async {
@@ -150,13 +155,15 @@ class BookBloc extends Bloc<BookEvent, BookState> {
 
   Future<void> _onPickImages(event, emit) async {
     try {
-      final images = await picker.pickMultiImage(limit: 5,requestFullMetadata: false);
+      final images = await picker.pickMultiImage();
       if (images.isNotEmpty) {
-         final limitedImages = images.take(5).toList(); // 👈 Limit to 5 images
-  selectedImages = limitedImages;
+         final limitedImages = images.take(5).toList(); 
+          selectedImages.addAll(limitedImages); 
+      emit(BookImagesSelected(List.from(selectedImages))); 
       }
     } catch (e) {
       emit(BookError('Failed to pick images: $e'));
     }
   }
 }
+

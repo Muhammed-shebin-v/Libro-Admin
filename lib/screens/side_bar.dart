@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:libro_admin/screens/Users_list.dart';
 import 'package:libro_admin/screens/books_list.dart';
 import 'package:libro_admin/screens/ad_screen.dart';
+import 'package:libro_admin/screens/borrow_list.dart';
 import 'package:libro_admin/screens/home.dart';
 import 'package:libro_admin/screens/home_screen.dart';
 import 'package:libro_admin/screens/login_screen.dart';
@@ -57,12 +58,6 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
     Widget nextScreen;
 
     switch (screenName) {
-      case 'Home':
-        nextScreen = LibroWebLayout(
-          currentScreen: 'Home',
-          child: HomeScreen(),
-        );
-        break;
       case 'Users':
         nextScreen = LibroWebLayout(
           currentScreen: 'Users',
@@ -87,10 +82,16 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
           child: DashboardPage(),
         );
         break;
+         case 'Borrowed Books':
+        nextScreen = LibroWebLayout(
+          currentScreen: 'Borrowed Books',
+          child: AdminBorrowedBooksScreen(),
+        );
+        break;
       default:
         nextScreen = LibroWebLayout(
-          currentScreen: 'Dashboard',
-          child: LoginScreen(),
+          currentScreen: 'DashBoard',
+          child: DashboardPage(),
         );
     }
 
@@ -99,10 +100,10 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
 
   final List<Map<String, dynamic>> _sidebarItems = [
     {'title': 'DashBoard', 'icon': Icons.dashboard},
-    {'title': 'Home', 'icon': Icons.home},
     {'title': 'Users', 'icon': Icons.verified_user},
     {'title': 'Books', 'icon': Icons.book},
     {'title': 'AD', 'icon': Icons.newspaper},
+    {'title': 'Borrowed Books', 'icon': Icons.bookmark},
   ];
 
   @override

@@ -7,10 +7,10 @@ import 'package:gap/gap.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
+import 'package:libro_admin/screens/all_categories.dart';
 import 'package:libro_admin/screens/book_details.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/addpop.dart';
-import 'package:libro_admin/widgets/all_categories.dart';
 import 'package:libro_admin/widgets/filter.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
 
@@ -110,8 +110,7 @@ class LibraryManagementScreen extends StatelessWidget {
                                 return DropdownButton<String>(
                                   underline: const SizedBox(),
                                   hint: const Text('Sort by'),
-                                  value:
-                                      _selectedSort,
+                                  value: _selectedSort,
                                   items:
                                       _sortOptions.map((String option) {
                                         return DropdownMenuItem<String>(
@@ -225,7 +224,7 @@ class LibraryManagementScreen extends StatelessWidget {
                                                   BorderRadius.circular(4),
                                               image: DecorationImage(
                                                 image: NetworkImage(
-                                                  book['imgUrl'] ??
+                                                  book['imageUrls'][0]??
                                                       'https://bkacontent.com/the-right-blog-images-are-important/',
                                                 ),
 
@@ -267,7 +266,9 @@ class LibraryManagementScreen extends StatelessWidget {
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 color:
-                                                 book['color'] != null ?  Color(book['color']): Colors.red,
+                                                    book['color'] != null
+                                                        ? Color(book['color'])
+                                                        : Colors.red,
                                                 //  Colors.red
                                               ),
                                             ),
@@ -298,5 +299,3 @@ class LibraryManagementScreen extends StatelessWidget {
     );
   }
 }
-
-

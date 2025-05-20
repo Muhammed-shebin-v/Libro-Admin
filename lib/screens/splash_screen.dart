@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:libro_admin/screens/home.dart';
 import 'package:libro_admin/screens/home_screen.dart';
 import 'package:libro_admin/screens/login_screen.dart';
 import 'package:libro_admin/screens/side_bar.dart';
@@ -24,7 +25,7 @@ class SplashScreen extends StatelessWidget {
 
     Future.delayed(Duration(seconds: 2), () {
       if (isLoggedIn==true) {
-        Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  LibroWebLayout(currentScreen: 'Home', child: HomeScreen()),),
+        Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  LibroWebLayout(currentScreen: 'DashBoard', child: DashboardPage()),),
         );
       } else {
         Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginScreen()),
