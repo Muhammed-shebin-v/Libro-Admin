@@ -6,12 +6,14 @@ class CustomForm extends StatelessWidget {
   final String hint;
   final TextEditingController controller;
   final String? Function(String?)? validator;
+  final bool? isPassword;
   const CustomForm({
     super.key,
     required this.title,
     required this.controller,
     required this.validator,
     required this.hint,
+    this.isPassword = false,
   });
 
   @override
@@ -21,6 +23,7 @@ class CustomForm extends StatelessWidget {
       children: [
         Text(title, style: TextStyle(fontSize: 20)),
         TextFormField(
+          obscureText: isPassword ?? false,
           validator: validator,
           controller: controller,
           decoration: InputDecoration(

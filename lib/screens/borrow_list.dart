@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
-import 'package:libro_admin/bloc/bloc/borrowed_books_dart_bloc.dart';
-import 'package:libro_admin/bloc/bloc/borrowed_books_dart_state.dart';
+import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_bloc.dart';
+import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_state.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/addpop.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
 
 class AdminBorrowedBooksScreen extends StatelessWidget {
-  const AdminBorrowedBooksScreen({super.key});
-
+   AdminBorrowedBooksScreen({super.key});
+  final TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -23,39 +23,6 @@ class AdminBorrowedBooksScreen extends StatelessWidget {
               return Center(child: Text(state.message));
             } else if (state is BorrowedBooksLoaded) {
               final items = state.list;
-//               return ListView.builder(
-//                 itemCount: items.length,
-//                 itemBuilder: (context, index) {
-//                   final item = items[index];
-//                   return Card(
-//                     margin: const EdgeInsets.all(8),
-//                     child: ListTile(
-//                       leading: CircleAvatar(backgroundImage: NetworkImage(item.userImage)),
-//                       title: Text(item.userName),
-//                       subtitle: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text("📖 ${item.bookName}"),
-//                           Text("📅 Borrowed: ${item.borrowDate}"),
-//                           Text("📆 Return: ${item.returnDate}"),
-//                           Text("💰 Fine: ₹${item.fine}"),
-//                           Text("Status: ${item.status}"),
-//                         ],
-//                       ),
-//                       trailing: Image.network(item.bookImage, width: 50, height: 70, fit: BoxFit.cover),
-//                     ),
-//                   );
-//                 },
-//               );
-//             } else {
-//               return const Center(child: Text('No data'));
-//             }
-//           },
-//         ),
-      
-//     );
-//   }
-// }
            return  Row(
               children: [
                 Expanded(
@@ -63,7 +30,8 @@ class AdminBorrowedBooksScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomSearchBar(),
+                      CustomSearchBar(controller: controller,onchanged: (query) {},),
+
                       Row(
                         children: [
                           const Text(

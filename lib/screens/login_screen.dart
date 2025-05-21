@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:libro_admin/screens/home_screen.dart';
+import 'package:libro_admin/screens/home.dart';
 import 'package:libro_admin/screens/side_bar.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/form.dart';
@@ -33,7 +33,7 @@ class LoginScreen extends StatelessWidget {
         MaterialPageRoute(
           builder:
               (context) =>
-                  LibroWebLayout(currentScreen: 'Home', child: HomeScreen()),
+                  LibroWebLayout(currentScreen: 'DashBoard', child: DashboardPage()),
         ),
       );
     } else {
@@ -89,6 +89,7 @@ class LoginScreen extends StatelessWidget {
                           },
                         ),
                         CustomForm(
+                          isPassword: true,
                           title: 'Password',
                           hint: 'enter password',
                           controller: _passwordController,

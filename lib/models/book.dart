@@ -4,17 +4,17 @@ import 'package:flutter/cupertino.dart';
 class Book {
   final String? uid;
   final String bookName;
-  final String bookId;
+  final String? bookId;
   final String authorName;
-  final String description;
-  final String category;
-  final String pages;
-  final String stocks;
-  final String location;
+  final String? description;
+  final String? category;
+  final String? pages;
+  final String? stocks;
+  final String? location;
   // final String imgUrl;
-  final Color color;
-  final int score;
-  final String date;
+  final Color? color;
+  final int? score;
+  final String? date;
   final List<String>? imageUrls;
 
   Book({
@@ -22,15 +22,15 @@ class Book {
     this.score = 0,
     this.date = '',
     required this.bookName,
-    required this.bookId,
+     this.bookId,
     required this.authorName,
-    required this.description,
-    required this.category,
-    required this.pages,
-    required this.stocks,
-    required this.location,
+     this.description,
+     this.category,
+     this.pages,
+     this.stocks,
+     this.location,
     // required this.imgUrl,
-    required this.color,
+     this.color,
     this.imageUrls,
     });
 
@@ -50,7 +50,9 @@ class Book {
       color: Color(int.parse(data['color'], radix: 16)),
       score: data['score'] ?? 0,
       date: data['date']?.toDate().toString() ?? '',
-      imageUrls: List<String>.from(data['imageUrls'] ?? []),
+      imageUrls: data['imageUrls'] != null
+          ? List<String>.from(data['imageUrls']) 
+          : [],
     );
   }
 
@@ -66,7 +68,7 @@ class Book {
       'location': location,
       // 'imgUrl':imgUrl,
       'date': DateTime.now(),
-      'color': color.toARGB32(),
+      'color': color!.toARGB32(),
       'imageUrls': imageUrls,
     };
   }

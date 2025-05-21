@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:libro_admin/bloc/searchUsers/search_users_bloc.dart';
+import 'package:libro_admin/bloc/searchUsers/search_users_event.dart';
+import 'package:libro_admin/bloc/searchUsers/search_users_state.dart';
 import 'package:libro_admin/bloc/user/users_bloc.dart';
 import 'package:libro_admin/bloc/user/users_event.dart';
 import 'package:libro_admin/bloc/user/users_state.dart';
@@ -17,21 +20,9 @@ class UserManagementScreen extends StatefulWidget {
 }
 
 class _UserManagementScreenState extends State<UserManagementScreen> {
-  // final CollectionReference users = FirebaseFirestore.instance.collection(
-  //   'users',
-  // );
-  // Future<List<QueryDocumentSnapshot>> fetchUsers() async {
-  //   try {
-  //     QuerySnapshot snapshot = await users.get();
-  //     log('fetched users');
-  //     return snapshot.docs;
-  //   } catch (e) {
-  //     log("Error fetching data: $e");
-  //     return [];
-  //   }
-  // }
 
   Map<String, dynamic>? selectedUser;
+  final TextEditingController searchController = TextEditingController();
 
   final FilterController filterController2 = FilterController([
     'Fiction',
@@ -261,8 +252,65 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomSearchBar(),
+          CustomSearchBar(controller: searchController,onchanged: (query) {
+                      context.read<SearchUsersBloc>().add(SearchUsers(query));
+                    },),
+           BlocBuilder<SearchUsersBloc, SearchUsersState>(
+            builder: (context, state) {
+              if (state is SearchUsersLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is SearchUsersLoaded) {
+                final users = state.results;
+                if (users.isEmpty) {
+                  return const Center(child: Text('No books found.'));
+                }
+                return SizedBox(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemCount: users.length,
+                    itemBuilder: (context, index) {
+                      final user = users[index];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
 
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(80),
+                              child: Image.network(
+                               user.imgeUrl,
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (_, __, ___) => const Icon(Icons.book),
+                              ),
+                            ),
+                            Gap(20),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(user.fullName!),
+                                Text(user.email),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              } else if (state is SearchUsersError) {
+                return Center(child: Text(state.message));
+              }
+              return const SizedBox();
+            },
+          ),
+          Gap(50),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

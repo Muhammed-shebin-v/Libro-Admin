@@ -30,19 +30,24 @@ class CustomCounter extends StatelessWidget {
           ),
           child: Center(
             child: TextFormField(
-                controller: controller,
-                style: const TextStyle(fontSize: 15),
-                maxLines: 1,
-                maxLength: maxLenght,
-                decoration: InputDecoration(
-                  isDense: true,
-                  counterText: '',
-                  border: InputBorder.none,
-                ),
+              validator: (value) {
+                if (value == null || value.isEmpty || int.tryParse(value) == null) {
+                  return 'Inavlid Entry';
+                }
+                return null;
+              },
+              controller: controller,
+              style: const TextStyle(fontSize: 15),
+              maxLines: 1,
+              maxLength: maxLenght,
+              decoration: InputDecoration(
+                isDense: true,
+                counterText: '',
+                border: InputBorder.none,
               ),
+            ),
           ),
-          ),
-        
+        ),
       ],
     );
   }

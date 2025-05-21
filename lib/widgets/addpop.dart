@@ -1,10 +1,8 @@
-import 'dart:developer';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gap/gap.dart';
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
@@ -243,9 +241,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
                       child:
                           images.isEmpty
                               ? const Text('No images selected.')
-                              :
-                              
-                               ListView.builder(
+                              : ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: images.length,
                                 itemBuilder: (context, index) {

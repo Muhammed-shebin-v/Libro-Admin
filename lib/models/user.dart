@@ -1,16 +1,19 @@
 class User {
-  final String uid;
-  final String username;
+  final String? uid;
+  final String? username;
   final String email;
   final String address;
   final String phoneNumber;
-
+  final String? fullName;
+  final String imgeUrl;
   User({
-    required this.uid,
+    this.uid,
     required this.username,
     required this.email,
     required this.address,
     required this.phoneNumber,
+    this.fullName,
+    this.imgeUrl = '',
   });
 
   factory User.fromMap(Map<String, dynamic> data) {

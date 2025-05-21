@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:libro_admin/bloc/bloc/borrowed_books_dart_event.dart';
-import 'package:libro_admin/bloc/bloc/borrowed_books_dart_state.dart';
+import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_event.dart';
+import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_state.dart';
 import 'package:libro_admin/models/borrowed_book.dart';
 
 class BorrowedBooksBloc extends Bloc<BorrowedBooksEvent, BorrowedBooksState> {

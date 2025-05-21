@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+import 'package:libro_admin/bloc/searchBook/search_bloc.dart';
+import 'package:libro_admin/bloc/searchBook/search_event.dart';
+import 'package:libro_admin/bloc/searchBook/search_state.dart';
 
-class CustomSearchBar extends StatefulWidget {
-  const CustomSearchBar({super.key});
+class CustomSearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final Function(String) onchanged;
+  const CustomSearchBar({super.key,required this.controller,required this.onchanged});
 
-  @override
-  State<CustomSearchBar> createState() => _CustomSearchBarState();
-}
-
-List<DocumentSnapshot> _searchResults = [];
-
-class _CustomSearchBarState extends State<CustomSearchBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -26,66 +26,32 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             ),
             child: Row(
               children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Icon(Icons.search, color: Colors.grey),
-                ),
                 Expanded(
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      hintText: 'Search',
-                      border: InputBorder.none,
+                  child: SearchBar(
+                    controller: controller,
+                    shadowColor: WidgetStateProperty.all(Colors.transparent),
+                    backgroundColor: WidgetStateProperty.all(
+                      const Color.fromARGB(255, 223, 220, 220),
                     ),
-                    onChanged: (value) {
-                      searchBooks(value);
-                    },
+                    shape: WidgetStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    leading: Icon(Icons.search),
+                    padding: WidgetStateProperty.all(
+                      EdgeInsets.symmetric(horizontal: 15),
+                    ),
+                    onChanged: onchanged,
                   ),
                 ),
               ],
             ),
           ),
-          _searchResults.isEmpty
-              ? const SizedBox()
-              : SizedBox(
-                height: 200,
-                child: ListView.builder(
-                  itemCount: _searchResults.length,
-                  itemBuilder: (context, index) {
-                    final data =
-                        _searchResults[index].data() as Map<String, dynamic>;
 
-                    return ListTile(
-                      leading: Icon(Icons.book),
-                      title: Text(data['bookName'] ?? ''),
-                      subtitle: Text(
-                        "Author: ${data['authorName'] ?? ''} | Category: ${data['category'] ?? ''}",
-                      ),
-                    );
-                  },
-                ),
-              ),
+          
         ],
       ),
     );
-  }
-
-  searchBooks(String query) async {
-    final allBooksSnapshot =
-        await FirebaseFirestore.instance.collection('books').get();
-
-    final results =
-        allBooksSnapshot.docs.where((doc) {
-          final data = doc.data();
-          final title = (data['bookName'] ?? '').toString().toLowerCase();
-          final author = (data['authorName'] ?? '').toString().toLowerCase();
-          final category = (data['category'] ?? '').toString().toLowerCase();
-
-          return title.contains(query) ||
-              author.contains(query) ||
-              category.contains(query);
-        }).toList();
-    setState(() {
-      _searchResults = results;
-    });
   }
 }

@@ -4,6 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:libro_admin/bloc/searchBook/search_bloc.dart';
+import 'package:libro_admin/bloc/searchBook/search_event.dart';
+import 'package:libro_admin/bloc/searchBook/search_state.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
@@ -24,18 +27,9 @@ class LibraryManagementScreen extends StatelessWidget {
     'Borrowed',
     'Out of Stock',
   ]);
-  void searchBooks(String keyword) async {
-    final querySnapshot =
-        await FirebaseFirestore.instance
-            .collection('books')
-            .where('title', isGreaterThanOrEqualTo: keyword)
-            .where('title', isLessThan: keyword + 'z')
-            .get();
+  final TextEditingController searchController = TextEditingController();
 
-    for (var doc in querySnapshot.docs) {
-      log(doc['title']);
-    }
-  }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +50,61 @@ class LibraryManagementScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomSearchBar(),
+                      CustomSearchBar(controller: searchController,onchanged: (query) {
+                      context.read<SearchBloc>().add(SearchBooks(query));
+                    },),
+                      BlocBuilder<SearchBloc, SearchState>(
+            builder: (context, state) {
+              if (state is SearchLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is SearchLoaded) {
+                final books = state.results;
+                if (books.isEmpty) {
+                  return const Center(child: Text('No books found.'));
+                }
+                return SizedBox(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemCount: books.length,
+                    itemBuilder: (context, index) {
+                      final book = books[index];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+
+                        child: Row(
+                          children: [
+                            Image.network(
+                              book.imageUrls![0],
+                              width: 50,
+                              height: 70,
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (_, __, ___) => const Icon(Icons.book),
+                            ),
+                            Gap(20),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(book.bookName),
+                                Text(book.authorName),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              } else if (state is SearchError) {
+                return Center(child: Text(state.message));
+              }
+              return const SizedBox();
+            },
+          ),
                       Row(
                         children: [
                           const Text(
