@@ -8,6 +8,7 @@ import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
 import 'package:libro_admin/bloc/category/categories_bloc.dart';
+import 'package:libro_admin/bloc/category/categories_event.dart';
 import 'package:libro_admin/bloc/category/categories_state.dart';
 import 'package:libro_admin/db/book.dart';
 import 'package:libro_admin/models/book.dart';
@@ -34,7 +35,12 @@ class _AddBookDialogState extends State<AddBookDialog> {
     super.initState();
     if (widget.isUpdate) {
       _populateFields(widget.bookData!);
+      context.read<CategoryBloc>().add(
+    LoadCategoriesForEdit(widget.bookData!['category']),
+);
     }
+    context.read<CategoryBloc>().add(LoadCategoriesForEdit(null));
+    
   }
 
   void _populateFields(Map<String, dynamic> data) {
@@ -45,6 +51,15 @@ class _AddBookDialogState extends State<AddBookDialog> {
     _pagesController.text = data['pages'] ?? '';
     _stocksController.text = data['stocks'] ?? '';
     _locationController.text = data['location'] ?? '';
+    _selectedColor = Color(data['color'] ?? const Color.fromARGB(255, 0, 0, 0).toARGB32());
+    // selectedCategory = Category(
+    //   location: data['location'] ?? '',
+    //   totalBooks: data['totalBooks'] ?? 0,
+    //   id: data['categoryId'] ?? '',
+    //   name: data['category'] ?? '',
+    //   color: _selectedColor,
+    //   imageUrl: data['imageUrl'] ?? '',
+    // );n
   }
 
   final cloudinary = CloudinaryPublic(
@@ -65,11 +80,11 @@ class _AddBookDialogState extends State<AddBookDialog> {
   final db = DataBaseService();
   final _formKey = GlobalKey<FormState>();
   Category? selectedCategory;
+
   final TextEditingController newCategoryController = TextEditingController();
 
   void _onSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate() ||
-        // _uploadedImageUrl == null ||
         selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -282,7 +297,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
                         builder: (context, state) {
                           if (state is CategoryLoading) {
                             return Center(child: CircularProgressIndicator());
-                          } else if (state is CategoryLoaded) {
+                          } else if (state is EditBookLoaded) {
                             return Container(
                               decoration: BoxDecoration(
                                 border: Border.all(),
@@ -291,11 +306,11 @@ class _AddBookDialogState extends State<AddBookDialog> {
                               child: DropdownButton<Category>(
                                 isExpanded: true,
                                 underline: SizedBox(),
-                                value: selectedCategory,
+                                value: state.selectedCategory??state.categories.first,
                                 hint: Text('    Select Category'),
                                 items:
-                                    state.categories
-                                        .map(
+                                    state.
+                                        categories.map(
                                           (cat) => DropdownMenuItem<Category>(
                                             value: cat,
                                             child: Row(

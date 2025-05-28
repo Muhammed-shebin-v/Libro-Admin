@@ -11,7 +11,6 @@ class Book {
   final String? pages;
   final String? stocks;
   final String? location;
-  // final String imgUrl;
   final Color? color;
   final int? score;
   final String? date;
@@ -29,7 +28,6 @@ class Book {
      this.pages,
      this.stocks,
      this.location,
-    // required this.imgUrl,
      this.color,
     this.imageUrls,
     });
@@ -46,7 +44,6 @@ class Book {
       pages: data['pages'] ?? '',
       stocks: data['stocks'] ?? '',
       location: data['location'] ?? '',
-      // imgUrl: data['imgUrl']??'',
       color: Color(int.parse(data['color'], radix: 16)),
       score: data['score'] ?? 0,
       date: data['date']?.toDate().toString() ?? '',
@@ -66,7 +63,6 @@ class Book {
       'pages': pages,
       'stocks': stocks,
       'location': location,
-      // 'imgUrl':imgUrl,
       'date': DateTime.now(),
       'color': color!.toARGB32(),
       'imageUrls': imageUrls,

@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:libro_admin/bloc/category/categories_event.dart';
 import 'package:libro_admin/bloc/category/categories_state.dart';
@@ -12,6 +14,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<AddCategoryEvent>(_onAddCategory);
     on<UpdateCategoryEvent>(_onUpdateCategory);
     on<IncrementCategoryBookCount>(_onIncrementBookCount);
+    on<LoadCategoriesForEdit>(_onLoadCategoriesForEdit);
   }
 
   Future<void> _onLoadCategories(
@@ -73,4 +76,30 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   for (var doc in querySnapshot.docs) {
     await doc.reference.update({'category': newName.name});
   }
+
+  }
+    Future<void> _onLoadCategoriesForEdit(
+      LoadCategoriesForEdit event, Emitter<CategoryState> emit) async {
+    emit(CategoryLoading());
+
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('categories').get();
+      final categories = snapshot.docs
+          .map((doc) => Category.fromFirestore(doc))
+          .toList();
+
+       Category? selected;
+      if (event.currentCategoryName != null && event.currentCategoryName!.isNotEmpty) {
+        try {
+          selected = categories.firstWhere((c) => c.name == event.currentCategoryName);
+        } catch (_) {
+          selected = categories.first;
+        }
+      }
+
+      emit(EditBookLoaded(categories, selected));
+    } catch (e) {
+      emit(CategoryError('Failed to load categories: $e'));
+    }
+  
 }

@@ -3,6 +3,12 @@ import 'package:libro_admin/models/category.dart';
 abstract class CategoryEvent {}
 
 class LoadCategories extends CategoryEvent {}
+// new
+class LoadCategoriesForEdit extends CategoryEvent {
+  String? currentCategoryName;
+
+  LoadCategoriesForEdit(this.currentCategoryName);
+}
 
 class AddCategoryEvent extends CategoryEvent {
   final Category category;

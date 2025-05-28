@@ -24,7 +24,7 @@ class Category {
       id: doc.id,
       name: data['name'] ?? '',
       imageUrl: data['imageUrl'] ?? '',
-      color: Color(int.tryParse(data['color'] ?? '0xff2196f3') ??0xff2196f3),
+      color: Color(int.tryParse(data['color'] ?? '0xff2196f3') ?? 0xff2196f3),
       location: data['location'] ?? '',
       totalBooks: data['totalBooks'] ?? 0,
     );
