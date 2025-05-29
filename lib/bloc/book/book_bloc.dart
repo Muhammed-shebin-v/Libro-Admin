@@ -15,6 +15,7 @@ class BookBloc extends Bloc<BookEvent, BookState> {
     'unsigned_uploads',
     cache: false,
   );
+
   List<XFile> selectedImages = [];
   List<String> uploadedUrls = [];
   final db = DataBaseService();
@@ -29,6 +30,8 @@ class BookBloc extends Bloc<BookEvent, BookState> {
     on<LoadBooksLatest>(_loadLatest);
     on<SortChanged>(_sortchanged);
     on<PickImagesEvent>(_onPickImages);
+    on<LoadBooksByCategory>(_onLoadBooksByCategory);
+    on<SearchBooks>(_onSearchBooks);
   }
 
   Future<void> _onLoadBooks(LoadBooks event, Emitter<BookState> emit) async {
@@ -64,32 +67,18 @@ class BookBloc extends Bloc<BookEvent, BookState> {
 
   Future<void> _onAddBook(AddBook event, Emitter<BookState> emit) async {
     log('xssss');
-  
-      emit(BookLoading());
-      try {
-        uploadedUrls.clear();
 
-
-        for (var image in selectedImages) {
-          final response = await cloudinary.uploadFile(
-            CloudinaryFile.fromFile(
-              image.path,
-              resourceType: CloudinaryResourceType.Image,
-            ),
-          );
-          uploadedUrls.add(response.secureUrl);
-        }
-        log('Uploaded URLs: $uploadedUrls');
-        if(uploadedUrls.isNotEmpty) {
-        await db.create(event.book,uploadedUrls);
+    emit(BookLoading());
+    try {
+      if (uploadedUrls.isNotEmpty) {
+        await db.create(event.book, uploadedUrls);
         final books = await db.getBooks();
         emit(BookLoaded(books));
         selectedImages.clear();
-        }
-      } catch (e) {
-        emit(BookError("Failed to add book: $e"));
       }
-    
+    } catch (e) {
+      emit(BookError("Failed to add book: $e"));
+    }
   }
 
   Future<void> _onEditBook(EditBook event, Emitter<BookState> emit) async {
@@ -157,13 +146,69 @@ class BookBloc extends Bloc<BookEvent, BookState> {
     try {
       final images = await picker.pickMultiImage();
       if (images.isNotEmpty) {
-         final limitedImages = images.take(5).toList(); 
-          selectedImages.addAll(limitedImages); 
-      emit(BookImagesSelected(List.from(selectedImages))); 
+        final limitedImages = images.take(5).toList();
+        selectedImages.addAll(limitedImages);
+        uploadedUrls.clear();
+
+        for (var image in selectedImages) {
+          final response = await cloudinary.uploadFile(
+            CloudinaryFile.fromFile(
+              image.path,
+              resourceType: CloudinaryResourceType.Image,
+            ),
+          );
+          uploadedUrls.add(response.secureUrl);
+        }
+        log('Uploaded URLs: $uploadedUrls');
       }
+      emit(BookImagesSelected(uploadedUrls));
     } catch (e) {
       emit(BookError('Failed to pick images: $e'));
     }
   }
-}
 
+  Future<void> _onLoadBooksByCategory(
+    LoadBooksByCategory event,
+    Emitter<BookState> emit,
+  ) async {
+    emit(BookLoading());
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance
+              .collection('books')
+              .where('category', isEqualTo: event.categoryName)
+              .get();
+      final books = snapshot.docs.map((doc) => doc.data()).toList();
+      log(books.toString());
+      emit(BookLoaded(books));
+    } catch (e) {
+      emit(BookError('Failed to load category books: $e'));
+    }
+  }
+
+  Future<void> _onSearchBooks(
+    SearchBooks event,
+    Emitter<BookState> emit,
+  ) async {
+    if (event.query.isEmpty) {
+      add(LoadBooks());
+    }
+
+    emit(BookLoading());
+    try {
+      final query = event.query.toLowerCase();
+      final snapshot =
+          await FirebaseFirestore.instance.collection('books').get();
+      final results =
+          snapshot.docs.map((doc) => doc.data()).where((data) {
+            final bookName = (data['bookName'] ?? '').toString().toLowerCase();
+            final authorName =
+                (data['authorName'] ?? '').toString().toLowerCase();
+            return bookName.contains(query) || authorName.contains(query);
+          }).toList();
+      emit(BookLoaded(results));
+    } catch (e) {
+      emit(BookError('Error searching books: $e'));
+    }
+  }
+}

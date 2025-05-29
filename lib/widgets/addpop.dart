@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gap/gap.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
@@ -36,11 +35,10 @@ class _AddBookDialogState extends State<AddBookDialog> {
     if (widget.isUpdate) {
       _populateFields(widget.bookData!);
       context.read<CategoryBloc>().add(
-    LoadCategoriesForEdit(widget.bookData!['category']),
-);
+        LoadCategoriesForEdit(widget.bookData!['category']),
+      );
     }
     context.read<CategoryBloc>().add(LoadCategoriesForEdit(null));
-    
   }
 
   void _populateFields(Map<String, dynamic> data) {
@@ -51,7 +49,13 @@ class _AddBookDialogState extends State<AddBookDialog> {
     _pagesController.text = data['pages'] ?? '';
     _stocksController.text = data['stocks'] ?? '';
     _locationController.text = data['location'] ?? '';
-    _selectedColor = Color(data['color'] ?? const Color.fromARGB(255, 0, 0, 0).toARGB32());
+    _selectedColor = Color(
+      data['color'] ?? const Color.fromARGB(255, 0, 0, 0).toARGB32(),
+    );
+    for (String image in data['imageUrls']) {
+      _images.add(image);
+    }
+
     // selectedCategory = Category(
     //   location: data['location'] ?? '',
     //   totalBooks: data['totalBooks'] ?? 0,
@@ -79,13 +83,13 @@ class _AddBookDialogState extends State<AddBookDialog> {
   final _locationController = TextEditingController();
   final db = DataBaseService();
   final _formKey = GlobalKey<FormState>();
+  final List<String> _images = [];
   Category? selectedCategory;
 
   final TextEditingController newCategoryController = TextEditingController();
 
   void _onSubmit(BuildContext context) {
-    if (!_formKey.currentState!.validate() ||
-        selectedCategory == null) {
+    if (!_formKey.currentState!.validate() || selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Color.fromARGB(255, 231, 19, 19),
@@ -245,42 +249,72 @@ class _AddBookDialogState extends State<AddBookDialog> {
                 ),
                 BlocBuilder<BookBloc, BookState>(
                   builder: (context, state) {
-                    List<XFile> images = [];
+                    List<String> images = [];
 
                     if (state is BookImagesSelected) {
                       images = state.images;
                     }
-
-                    return SizedBox(
-                      height: 200,
-                      child:
-                          images.isEmpty
-                              ? const Text('No images selected.')
-                              : ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: images.length,
-                                itemBuilder: (context, index) {
-                                  final selectedImage = images[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Container(
-                                      width: 110,
-                                      height: 140,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Image.network(
-                                        selectedImage.path,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  );
-                                },
+                    if (widget.isUpdate == true) {
+                      return SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _images.length,
+                          itemBuilder: (context, index) {
+                            final selectedimage = _images[index];
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                width: 110,
+                                height: 140,
+                                decoration: BoxDecoration(
+                                  border: Border.all(),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Image.network(
+                                  selectedimage,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                    );
+                            );
+                          },
+                        ),
+                      );
+                    } else {
+                      return SizedBox(
+                        height: 200,
+                        child:
+                            images.isEmpty
+                                ? const Text('No images selected.')
+                                : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: images.length,
+                                  itemBuilder: (context, index) {
+                                    final selectedimage = images[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        width: 110,
+                                        height: 140,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        child: Image.network(
+                                          selectedimage,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                      );
+                    }
                   },
                 ),
+
                 const Gap(20),
                 BookForm(hint: 'Book Name', controller: _bookNameController),
                 BookForm(hint: 'Book ID', controller: _bookIdController),
@@ -306,11 +340,13 @@ class _AddBookDialogState extends State<AddBookDialog> {
                               child: DropdownButton<Category>(
                                 isExpanded: true,
                                 underline: SizedBox(),
-                                value: state.selectedCategory??state.categories.first,
+                                value:
+                                    state.selectedCategory ??
+                                    state.categories.first,
                                 hint: Text('    Select Category'),
                                 items:
-                                    state.
-                                        categories.map(
+                                    state.categories
+                                        .map(
                                           (cat) => DropdownMenuItem<Category>(
                                             value: cat,
                                             child: Row(

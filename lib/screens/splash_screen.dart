@@ -25,9 +25,11 @@ class SplashScreen extends StatelessWidget {
 
     Future.delayed(Duration(seconds: 2), () {
       if (isLoggedIn==true) {
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) =>  LibroWebLayout(currentScreen: 'DashBoard', child: DashboardPage()),),
         );
       } else {
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginScreen()),
         );
       }

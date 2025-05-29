@@ -41,6 +41,6 @@ class SortState extends BookState {
   SortState(this.selectedSort);
 }
 class BookImagesSelected extends BookState {
-  final List<XFile> images;
+  final List<String> images;
   BookImagesSelected(this.images);
 }

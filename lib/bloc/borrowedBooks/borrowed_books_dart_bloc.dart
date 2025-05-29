@@ -14,24 +14,34 @@ class BorrowedBooksBloc extends Bloc<BorrowedBooksEvent, BorrowedBooksState> {
         List<BorrowedBookModel> borrowDetails = [];
 
         for (var doc in borrowSnapshots.docs) {
-          final data = doc.data();
-          final userSnap = await FirebaseFirestore.instance.collection('users').doc(data['userId']).get();
-          final bookSnap = await FirebaseFirestore.instance.collection('books').doc(data['bookId']).get();
+         
+          final userSnap =
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(doc.data()['userId'])
+                  .get();
+          final bookSnap =
+              await FirebaseFirestore.instance
+                  .collection('books')
+                  .doc(doc.data()['bookId'])
+                  .get();
 
           final user = userSnap.data();
           final book = bookSnap.data();
 
           if (user != null && book != null) {
-            borrowDetails.add(BorrowedBookModel(
-              userName: user['fullName'] ?? '',
-              userImage: user['imgUrl'] ?? '',
-              bookName: book['bookName'] ?? '',
-              bookImage: book['imageUrls'][0] ?? '',
-              borrowDate:DateTime.parse(data['borrowDate']),
-              returnDate: DateTime.parse(data['returnDate']),
-              fine: data['fine'] ?? 0,
-              status: data['status'] ?? 'ongoing',
-            ));
+            borrowDetails.add(
+              BorrowedBookModel(
+                userName: user['fullName'] ?? '',
+                userImage: user['imgUrl'] ?? '',
+                bookName: book['bookName'] ?? '',
+                bookImage: book['imageUrls'][0] ?? '',
+                borrowDate: DateTime.parse(doc.data()['borrowDate']),
+                returnDate: DateTime.parse(doc.data()['returnDate']),
+                fine: doc.data()['fine'] ?? 0,
+                status: doc.data()['status'] ?? 'ongoing',
+              ),
+            );
           }
         }
         emit(BorrowedBooksLoaded(borrowDetails));

@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:libro_admin/bloc/searchUsers/search_users_bloc.dart';
 import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_bloc.dart';
 import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_event.dart';
-import 'package:libro_admin/bloc/searchBook/search_bloc.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/category/categories_bloc.dart';
@@ -25,8 +24,6 @@ void main() async {
         BlocProvider(create: (context) => BookBloc()..add(LoadBooks())),
         BlocProvider(create: (_) => CategoryBloc(FirebaseFirestore.instance)..add(LoadCategories())),
         BlocProvider(create: (_) => BorrowedBooksBloc()..add(LoadBorrowedBooks())),
-        BlocProvider(create: (_) => SearchBloc()),
-        BlocProvider(create: (_) => SearchUsersBloc()),
       ],
       child: LibroAdmin(),
     ),
