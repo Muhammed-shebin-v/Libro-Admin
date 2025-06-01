@@ -8,13 +8,15 @@ class Book {
   final String authorName;
   final String? description;
   final String? category;
-  final String? pages;
-  final String? stocks;
+  final int? pages;
+  final int? stocks;
   final String? location;
   final Color? color;
   final int? score;
   final String? date;
   final List<String>? imageUrls;
+  final int? currentStock;
+  final int? readers;
 
   Book({
     this.uid,
@@ -30,6 +32,8 @@ class Book {
      this.location,
      this.color,
     this.imageUrls,
+    this.currentStock,
+    this.readers,
     });
 
   factory Book.fromMap(DocumentSnapshot doc) {
@@ -66,6 +70,8 @@ class Book {
       'date': DateTime.now(),
       'color': color!.toARGB32(),
       'imageUrls': imageUrls,
+      'currentStock':stocks,
+      'readers':0
     };
   }
 }

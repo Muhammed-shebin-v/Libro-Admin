@@ -25,6 +25,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     'Non-Fiction',
     'Science',
   ]);
+    String? _selectedSort;
+  final List<String> _sortOptions = ['Alphabetical', 'Latest'];
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +59,37 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       ),
                       Row(
                         children: [
-                          ElevatedButton.icon(
-                            icon: const Icon(Icons.sort),
-                            label: const Text('Sort'),
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.grey,
-                              foregroundColor: AppColors.black,
-                            ),
-                          ),
+                          Container(
+                      height: 30,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: BlocBuilder<UserBloc, UserState>(
+                        builder: (context, state) {
+                          return DropdownButton<String>(
+                            underline: const SizedBox(),
+                            hint: Text(_selectedSort ?? 'Sort by'),
+                            value: _selectedSort,
+                            items:
+                                _sortOptions.map((String option) {
+                                  return DropdownMenuItem<String>(
+                                    value: option,
+                                    child: Text(option),
+                                  );
+                                }).toList(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                _selectedSort = newValue;
+                                context.read<UserBloc>().add(
+                                  SortChanged(newValue),
+                                );
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ),
                           const SizedBox(width: 8),
                           ElevatedButton.icon(
                             icon: const Icon(Icons.filter_alt),

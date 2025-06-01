@@ -779,7 +779,7 @@ Future<int> findbooklength()async {
                                 Icon(Icons.warning_amber_outlined, size: 14, color: Colors.orange.shade400),
                                 const SizedBox(width: 4),
                                 Text(
-                                  'Not paid fees',
+                                  'Diamond',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey.shade800,

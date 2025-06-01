@@ -165,7 +165,7 @@ class AdminBorrowedBooksScreen extends StatelessWidget {
                                       ),
 
                                       Expanded(
-                                        child: Text("📆 ${DateFormat('dd-MM-yyyy').format(DateTime.parse(book.returnDate.toString()))}")
+                                        child: Text("📆 ${DateFormat('dd-MM-yyyy').format(DateTime.parse(book.borrowDate.toString()))}")
                                       ),
 
                                       Expanded(

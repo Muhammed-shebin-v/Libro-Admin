@@ -79,19 +79,16 @@ class BookDetailsWidget extends StatelessWidget {
                                             book['imageUrls'][index];
                                         return Padding(
                                           padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            width: 110,
-                                            height: 140,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(5),
+                                              child: Image.network(
+                                                selectedImage,
+                                                fit: BoxFit.cover,
+                                                 width: 110,
+                                              height: 140,
+                                              ),
                                             ),
-                                            child: Image.network(
-                                              selectedImage,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
+                                          
                                         );
                                       },
                                     ),
@@ -157,7 +154,7 @@ class BookDetailsWidget extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Text('1k+ readers'),
+                          Text('${book['readers'].toString()}readers'),
                         ],
                       ),
                     ),

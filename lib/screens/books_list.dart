@@ -83,7 +83,7 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                         //   ),
                         // );
                         context.read<BookBloc>().add(
-                          LoadBooksByCategory('history'),
+                          LoadBooksByCategory('tech'),
                         );
                       },
                       icon: const Icon(Icons.filter_list),
@@ -274,8 +274,7 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                                             ),
 
                                             Expanded(
-                                              child: Text(
-                                                book['pages'] ?? 'null',
+                                              child: Text(book['pages'].toString(),
                                               ),
                                             ),
 
@@ -298,7 +297,7 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
-                                                    book['stocks'] ?? 'null',
+                                                    book['stocks'].toString(),
                                                   ),
                                                 ],
                                               ),

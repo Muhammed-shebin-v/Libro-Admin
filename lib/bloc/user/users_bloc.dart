@@ -13,6 +13,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<FetchUsers>(_onFetchUsers);
     on<SelectUser>(_onSelectUser);
     on<SearchUsers>(_onSearchUsers);
+    on<SortChanged>(_sortchanged);
+    on<LoadUsersAlphabetical>(_loadAlphabetical);
+    on<LoadUsersLatest>(_loadLatest);
   }
 
 
@@ -63,4 +66,51 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(UserError('Error searching books: $e'));
     }
   }
+  Future<void> _loadAlphabetical(
+    LoadUsersAlphabetical event,
+    Emitter<UserState> emit,
+  ) async {
+    emit(UserLoading());
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .orderBy('username')
+              .get();
+
+      final books = snapshot.docs.map((doc) => doc.data()).toList();
+      emit(UserLoaded(books));
+    } catch (e) {
+      emit(UserError('Failed to load books'));
+    }
+  }
+
+  Future<void> _loadLatest(
+    LoadUsersLatest event,
+    Emitter<UserState> emit,
+  ) async {
+    emit(UserLoading());
+    try {
+      final snapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .orderBy('createdAt', descending: true)
+              .get();
+
+      final books = snapshot.docs.map((doc) => doc.data()).toList();
+      emit(UserLoaded(books));
+    } catch (e) {
+      emit(UserError('Failed to load books'));
+    }
+  }
+
+  Future<void> _sortchanged(SortChanged event, Emitter<UserState> emit) async {
+    emit(SortState(event.newSort));
+    if (event.newSort == 'Alphabetical') {
+      add(LoadUsersAlphabetical());
+    } else if (event.newSort == 'Latest') {
+      add(LoadUsersLatest());
+    }
+  }
+
 }

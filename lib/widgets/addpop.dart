@@ -46,8 +46,8 @@ class _AddBookDialogState extends State<AddBookDialog> {
     _bookIdController.text = data['bookId'] ?? '';
     _authorNameController.text = data['authorName'] ?? '';
     _descriptionController.text = data['description'] ?? '';
-    _pagesController.text = data['pages'] ?? '';
-    _stocksController.text = data['stocks'] ?? '';
+    _pagesController.text = data['pages'].toString();
+    _stocksController.text = data['stocks'].toString();
     _locationController.text = data['location'] ?? '';
     _selectedColor = Color(
       data['color'] ?? const Color.fromARGB(255, 0, 0, 0).toARGB32(),
@@ -56,14 +56,6 @@ class _AddBookDialogState extends State<AddBookDialog> {
       _images.add(image);
     }
 
-    // selectedCategory = Category(
-    //   location: data['location'] ?? '',
-    //   totalBooks: data['totalBooks'] ?? 0,
-    //   id: data['categoryId'] ?? '',
-    //   name: data['category'] ?? '',
-    //   color: _selectedColor,
-    //   imageUrl: data['imageUrl'] ?? '',
-    // );n
   }
 
   final cloudinary = CloudinaryPublic(
@@ -105,14 +97,13 @@ class _AddBookDialogState extends State<AddBookDialog> {
     }
 
     final book = Book(
-      // imgUrl: _uploadedImageUrl!,
       bookName: _bookNameController.text.trim(),
       bookId: _bookIdController.text.trim(),
       authorName: _authorNameController.text.trim(),
       description: _descriptionController.text.trim(),
       category: selectedCategory?.name ?? '',
-      pages: _pagesController.text.trim(),
-      stocks: _stocksController.text.trim(),
+      pages:int.parse(_pagesController.text) ,
+      stocks: int.parse(_stocksController.text),
       location: _locationController.text.trim(),
       color: _selectedColor,
     );
@@ -264,18 +255,17 @@ class _AddBookDialogState extends State<AddBookDialog> {
                             final selectedimage = _images[index];
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                width: 110,
-                                height: 140,
-                                decoration: BoxDecoration(
-                                  border: Border.all(),
-                                  borderRadius: BorderRadius.circular(10),
+                              child: ClipRRect(
+                               borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    selectedimage,
+                                    fit: BoxFit.cover,
+                                      width: 110,
+                                  height: 140,
+                                  
+                                  ),
                                 ),
-                                child: Image.network(
-                                  selectedimage,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                              
                             );
                           },
                         ),
@@ -293,18 +283,14 @@ class _AddBookDialogState extends State<AddBookDialog> {
                                     final selectedimage = images[index];
                                     return Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        width: 110,
-                                        height: 140,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(),
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
+                                      child: ClipRRect(
+                                       
+                                      borderRadius: BorderRadius.circular(10),
                                         child: Image.network(
                                           selectedimage,
                                           fit: BoxFit.cover,
+                                           width: 110,
+                                        height: 140,
                                         ),
                                       ),
                                     );

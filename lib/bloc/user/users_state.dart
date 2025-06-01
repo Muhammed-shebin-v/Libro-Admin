@@ -27,3 +27,7 @@ class UserError extends UserState {
   final String message;
   UserError(this.message);
 }
+class SortState extends UserState {
+  final String selectedSort;
+  SortState(this.selectedSort);
+}
