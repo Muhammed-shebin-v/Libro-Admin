@@ -7,7 +7,7 @@ import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/addpop.dart';
-import 'package:libro_admin/widgets/custom_dialog.dart';
+import 'package:libro_admin/screens/custom_dialog.dart';
 
 class BookDetailsWidget extends StatelessWidget {
   const BookDetailsWidget({super.key});
@@ -43,7 +43,7 @@ class BookDetailsWidget extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(book['bookId'] ?? 'null'),
+                        Text(book.bookId!),
                         const Spacer(),
                         IconButton(
                           icon: const Icon(Icons.edit),
@@ -56,7 +56,7 @@ class BookDetailsWidget extends StatelessWidget {
                           onPressed: () {
                             showCustomDialog(
                               context: context,
-                              bookId: book['uid'],
+                              bookId: book.uid,
                             );
                           },
                         ),
@@ -69,14 +69,14 @@ class BookDetailsWidget extends StatelessWidget {
                           SizedBox(
                             height: 200,
                             child:
-                                book['imageUrls'] == null
+                                book.imageUrls== null
                                     ? const Text('No images selected.')
                                     : ListView.builder(
                                       scrollDirection: Axis.horizontal,
-                                      itemCount: book['imageUrls'].length,
+                                      itemCount: book.imageUrls!.length,
                                       itemBuilder: (context, index) {
                                         final selectedImage =
-                                            book['imageUrls'][index];
+                                            book.imageUrls![index];
                                         return Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: ClipRRect(
@@ -96,14 +96,14 @@ class BookDetailsWidget extends StatelessWidget {
 
                           const SizedBox(height: 8),
                           Text(
-                            book['bookName'] ?? 'null',
+                            book.bookName,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            book['authorName'] ?? 'null',
+                            book.authorName,
                             style: TextStyle(color: Colors.grey),
                           ),
                         ],
@@ -126,7 +126,7 @@ class BookDetailsWidget extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '${book['stocks'] ?? 'null'}',
+                                '${book.stocks}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -150,17 +150,17 @@ class BookDetailsWidget extends StatelessWidget {
                                 ],
                               ),
                               Text(
-                                ' ${book['pages'] ?? 'null'} • ${book['category'] ?? 'null'}',
+                                ' ${book.pages} • ${book.category}',
                               ),
                             ],
                           ),
-                          Text('${book['readers'].toString()}readers'),
+                          Text('${book.readers.toString()}readers'),
                         ],
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      book['description'] ?? 'null',
+                      book.description!,
                       style: const TextStyle(height: 1.5),
                     ),
                     const SizedBox(height: 16),
@@ -168,7 +168,7 @@ class BookDetailsWidget extends StatelessWidget {
                       children: [
                         const Icon(Icons.location_on),
                         const SizedBox(width: 8),
-                        Text(book['location'] ?? 'null'),
+                        Text(book.location!),
                       ],
                     ),
                     const SizedBox(height: 16),

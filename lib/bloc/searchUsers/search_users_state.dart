@@ -3,7 +3,7 @@ abstract class SearchUsersState {}
 class SearchUsersInitial extends SearchUsersState {}
 class SearchUsersLoading extends SearchUsersState {}
 class SearchUsersLoaded extends SearchUsersState {
-  final List<User> results;
+  final List<UserModel> results;
   SearchUsersLoaded(this.results);
 }
 class SearchUsersError extends SearchUsersState {

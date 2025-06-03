@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
-class Book {
+class BookModel {
   final String? uid;
   final String bookName;
   final String? bookId;
@@ -13,15 +13,15 @@ class Book {
   final String? location;
   final Color? color;
   final int? score;
-  final String? date;
+  final DateTime date;
   final List<String>? imageUrls;
   final int? currentStock;
   final int? readers;
 
-  Book({
+  BookModel({
     this.uid,
     this.score = 0,
-    this.date = '',
+    required this.date,
     required this.bookName,
      this.bookId,
     required this.authorName,
@@ -36,11 +36,10 @@ class Book {
     this.readers,
     });
 
-  factory Book.fromMap(DocumentSnapshot doc) {
-    final data =doc.data () as Map<String, dynamic>;
-    return Book(
-      uid: doc.id,
-      bookName: data['bookname'] ?? '',
+  factory BookModel.fromMap(Map<String,dynamic> data) {
+    return BookModel(
+      uid: data['uid']??'',
+      bookName: data['bookName'] ?? '',
       bookId: data['bookId'] ?? '',
       authorName: data['authorName'] ?? '',
       description: data['description'] ?? '',
@@ -48,12 +47,14 @@ class Book {
       pages: data['pages'] ?? '',
       stocks: data['stocks'] ?? '',
       location: data['location'] ?? '',
-      color: Color(int.parse(data['color'], radix: 16)),
+      color: Color(data['color']),
       score: data['score'] ?? 0,
-      date: data['date']?.toDate().toString() ?? '',
+      date: (data['date'] as Timestamp).toDate(),
       imageUrls: data['imageUrls'] != null
           ? List<String>.from(data['imageUrls']) 
           : [],
+          readers: data['readers']??0,
+          currentStock: data['currentStock']??data['stocks']??0
     );
   }
 
@@ -70,8 +71,43 @@ class Book {
       'date': DateTime.now(),
       'color': color!.toARGB32(),
       'imageUrls': imageUrls,
-      'currentStock':stocks,
-      'readers':0
+      'currentStock':currentStock
     };
   }
+  BookModel copyWith({
+  String? uid,
+  String? bookName,
+  String? bookId,
+  String? authorName,
+  String? description,
+  String? category,
+  int? pages,
+  int? stocks,
+  String? location,
+  Color? color,
+  int? score,
+  DateTime? date,
+  List<String>? imageUrls,
+  int? currentStock,
+  int? readers,
+}) {
+  return BookModel(
+    uid: uid ?? this.uid,
+    bookName: bookName ?? this.bookName,
+    bookId: bookId ?? this.bookId,
+    authorName: authorName ?? this.authorName,
+    description: description ?? this.description,
+    category: category ?? this.category,
+    pages: pages ?? this.pages,
+    stocks: stocks ?? this.stocks,
+    location: location ?? this.location,
+    color: color ?? this.color,
+    score: score ?? this.score,
+    date: date ?? this.date,
+    imageUrls: imageUrls ?? this.imageUrls,
+    currentStock: currentStock ?? this.currentStock,
+    readers: readers ?? this.readers,
+  );
+}
+
 }

@@ -11,7 +11,7 @@ class LoadBooks extends BookEvent {
 }
 
 class SelectBook extends BookEvent {
-  final Map<String, dynamic> book;
+  final BookModel book;
   const SelectBook(this.book);
 }
 
@@ -21,12 +21,12 @@ class DeleteBook extends BookEvent {
 }
 
 class EditBook extends BookEvent {
-  final Map<String,dynamic> book;
+  final BookModel book;
   const EditBook(this.book);
 }
 
 class AddBook extends BookEvent {
-  final Book book;
+  final BookModel book;
   AddBook(this.book);
 }
 class LoadBooksAlphabetical extends BookEvent {

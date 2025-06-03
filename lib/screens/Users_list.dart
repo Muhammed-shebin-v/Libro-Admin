@@ -149,7 +149,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                               final user = state.users[index];
                               bool isSelected =
                                   state.selectedUser != null &&
-                                  state.selectedUser!['uid'] == user['uid'];
+                                  state.selectedUser!.uid == user.uid;
 
                               return InkWell(
                                 onTap: () {
@@ -185,32 +185,25 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                                   borderRadius:
                                                       BorderRadius.circular(80),
                                                   child:
-                                                      user['imgUrl'] == null
-                                                          ? Icon(
-                                                            Icons.person,
-                                                            size: 20,
-                                                            color:
-                                                                AppColors.black,
-                                                          )
-                                                          : Image.network(
-                                                            user['imgUrl'],
+                                                     Image.network(
+                                                            user.imgeUrl,
                                                             fit: BoxFit.fill,
                                                           ),
                                                 ),
                                               ),
                                               const SizedBox(width: 8),
-                                              Text(user['username']),
+                                              Text(user.userName),
                                             ],
                                           ),
                                         ),
                                         Expanded(
                                           flex: 2,
-                                          child: Text(user['uid']),
+                                          child: Text(user.uid),
                                         ),
-                                        Expanded(child: Text(user['email'])),
-                                        Expanded(child: Text(user['address'])),
+                                        Expanded(child: Text(user.email)),
+                                        Expanded(child: Text(user.place)),
                                         Expanded(
-                                          child: Text(user['phoneNumber']),
+                                          child: Text(user.phoneNumber),
                                         ),
                                         Expanded(
                                           child: Row(
@@ -224,10 +217,8 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                                 ),
                                               ),
                                               const SizedBox(width: 6),
-                                              user['isBlock'] == null
-                                                  ? Text(user['username'])
-                                                  : Text(
-                                                    user['isBlock'].toString(),
+                                              Text(
+                                                    user.isBlock.toString(),
                                                   ),
                                             ],
                                           ),

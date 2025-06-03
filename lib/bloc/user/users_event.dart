@@ -1,3 +1,5 @@
+import 'package:libro_admin/models/user.dart';
+
 abstract class UserEvent {
   const UserEvent();
 }
@@ -5,7 +7,7 @@ abstract class UserEvent {
 class FetchUsers extends UserEvent {}
 
 class SelectUser extends UserEvent {
-  final Map<String, dynamic> user;
+  final UserModel user;
   const SelectUser(this.user);
 }
 

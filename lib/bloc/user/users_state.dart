@@ -1,3 +1,5 @@
+import 'package:libro_admin/models/user.dart';
+
 abstract class UserState {
   const UserState();
 }
@@ -7,14 +9,14 @@ class UserInitial extends UserState {}
 class UserLoading extends UserState {}
 
 class UserLoaded extends UserState {
-  final List<Map<String, dynamic>> users;
-  final Map<String, dynamic>? selectedUser;
+  final List<UserModel> users;
+  final UserModel? selectedUser;
 
   const UserLoaded(this.users, {this.selectedUser});
 
   UserLoaded copyWith({
-    List<Map<String, dynamic>>? users,
-    Map<String, dynamic>? selectedUser,
+    List<UserModel>? users,
+    UserModel? selectedUser,
   }) {
     return UserLoaded(
       users ?? this.users,

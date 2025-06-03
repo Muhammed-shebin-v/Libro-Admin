@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:libro_admin/bloc/user/users_event.dart';
 import 'package:libro_admin/bloc/user/users_state.dart';
+import 'package:libro_admin/models/user.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   final CollectionReference usersRef = FirebaseFirestore.instance.collection(
@@ -24,7 +25,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     try {
       final snapshot = await usersRef.get();
       final userList =
-          snapshot.docs.map((e) => e.data() as Map<String, dynamic>).toList();
+          snapshot.docs.map((e) => UserModel.fromMap(e.data() as Map<String,dynamic> )).toList();
       emit(UserLoaded(userList));
     } catch (e) {
       emit(UserError("Failed to fetch users: $e"));
@@ -50,12 +51,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final usersSnap = await usersRef.get();
       final results =
           usersSnap.docs
-              .map((doc) => doc.data() as Map<String, dynamic>)
-              .toList()
+              .map((doc) => UserModel.fromMap(doc.data() as Map<String,dynamic>)).toList()
               .where((user) {
-                final username =(user['username'] ?? '').toString().toLowerCase();
-                final email = (user['email'] ?? '').toString().toLowerCase();
-                final phone =(user['phoneNumber'] ?? '').toString().toLowerCase();
+                final username =(user.userName).toString().toLowerCase();
+                final email = (user.email).toString().toLowerCase();
+                final phone =(user.phoneNumber).toString().toLowerCase();
                 return username.contains(query) ||
                     email.contains(query) ||
                     phone.contains(query);
@@ -75,10 +75,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final snapshot =
           await FirebaseFirestore.instance
               .collection('users')
-              .orderBy('username')
+              .orderBy('userName')
               .get();
 
-      final books = snapshot.docs.map((doc) => doc.data()).toList();
+      final books = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
       emit(UserLoaded(books));
     } catch (e) {
       emit(UserError('Failed to load books'));
@@ -97,7 +97,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
               .orderBy('createdAt', descending: true)
               .get();
 
-      final books = snapshot.docs.map((doc) => doc.data()).toList();
+      final books = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
       emit(UserLoaded(books));
     } catch (e) {
       emit(UserError('Failed to load books'));

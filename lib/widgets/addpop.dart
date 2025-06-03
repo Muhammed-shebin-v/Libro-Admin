@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
@@ -19,7 +22,7 @@ import 'package:libro_admin/widgets/counter.dart';
 import 'package:libro_admin/widgets/long_button.dart';
 
 class AddBookDialog extends StatefulWidget {
-  final Map<String, dynamic>? bookData;
+  final BookModel? bookData;
   final bool isUpdate;
 
   const AddBookDialog({super.key, required this.isUpdate, this.bookData});
@@ -27,7 +30,7 @@ class AddBookDialog extends StatefulWidget {
   @override
   State<AddBookDialog> createState() => _AddBookDialogState();
 }
-
+dynamic bookBloc;
 class _AddBookDialogState extends State<AddBookDialog> {
   @override
   void initState() {
@@ -35,34 +38,33 @@ class _AddBookDialogState extends State<AddBookDialog> {
     if (widget.isUpdate) {
       _populateFields(widget.bookData!);
       context.read<CategoryBloc>().add(
-        LoadCategoriesForEdit(widget.bookData!['category']),
+        LoadCategoriesForEdit(widget.bookData!.category),
       );
+      // context.read<BookBloc>().add(LoadBookFored(existingBookModel));
+      
     }
     context.read<CategoryBloc>().add(LoadCategoriesForEdit(null));
   }
 
-  void _populateFields(Map<String, dynamic> data) {
-    _bookNameController.text = data['bookName'] ?? '';
-    _bookIdController.text = data['bookId'] ?? '';
-    _authorNameController.text = data['authorName'] ?? '';
-    _descriptionController.text = data['description'] ?? '';
-    _pagesController.text = data['pages'].toString();
-    _stocksController.text = data['stocks'].toString();
-    _locationController.text = data['location'] ?? '';
-    _selectedColor = Color(
-      data['color'] ?? const Color.fromARGB(255, 0, 0, 0).toARGB32(),
-    );
-    for (String image in data['imageUrls']) {
+  void _populateFields(BookModel data) {
+    _bookNameController.text = data.bookName;
+    _bookIdController.text = data.bookId!;
+    _authorNameController.text = data.authorName;
+    _descriptionController.text = data.description!;
+    _pagesController.text = data.pages.toString();
+    _stocksController.text = data.stocks.toString();
+    _locationController.text = data.location ?? '';
+    _selectedColor = data.color ?? Color(0xFFFFFFFF);
+    for (String image in data.imageUrls!) {
       _images.add(image);
     }
-
   }
 
-  final cloudinary = CloudinaryPublic(
-    'dwzeuyi12',
-    'unsigned_uploads',
-    cache: false,
-  );
+  // final cloudinary = CloudinaryPublic(
+  //   'dwzeuyi12',
+  //   'unsigned_uploads',
+  //   cache: false,
+  // );
   Color _selectedColor = Colors.blue;
   Color _colorr = Colors.blue;
 
@@ -75,12 +77,14 @@ class _AddBookDialogState extends State<AddBookDialog> {
   final _locationController = TextEditingController();
   final db = DataBaseService();
   final _formKey = GlobalKey<FormState>();
-  final List<String> _images = [];
+  List<String> _images = [];
+  List<String> allImageUrls = [];
   Category? selectedCategory;
+   
 
-  final TextEditingController newCategoryController = TextEditingController();
+  // final TextEditingController newCategoryController = TextEditingController();
 
-  void _onSubmit(BuildContext context) {
+  void _onSubmit(BuildContext context) async {
     if (!_formKey.currentState!.validate() || selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -95,34 +99,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
       );
       return;
     }
-
-    final book = Book(
-      bookName: _bookNameController.text.trim(),
-      bookId: _bookIdController.text.trim(),
-      authorName: _authorNameController.text.trim(),
-      description: _descriptionController.text.trim(),
-      category: selectedCategory?.name ?? '',
-      pages:int.parse(_pagesController.text) ,
-      stocks: int.parse(_stocksController.text),
-      location: _locationController.text.trim(),
-      color: _selectedColor,
-    );
-    Map<String, dynamic> updatedBook = {
-      'uid': widget.bookData?['uid'] ?? '',
-      'bookName': _bookNameController.text.trim(),
-      'bookId': _bookIdController.text.trim(),
-      'authorName': _authorNameController.text.trim(),
-      'description': _descriptionController.text.trim(),
-      'category': selectedCategory!.name,
-      'pages': _pagesController.text.trim(),
-      'stocks': _stocksController.text.trim(),
-      'location': _locationController.text.trim(),
-      // 'imgUrl': _uploadedImageUrl!,
-      'color': _selectedColor.toARGB32(),
-    };
-    widget.isUpdate == true
-        ? context.read<BookBloc>().add(EditBook(updatedBook))
-        : context.read<BookBloc>().add(AddBook(book));
+    widget.isUpdate == false ? _addNewBook() : _updatePrevBook();
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -132,6 +109,41 @@ class _AddBookDialogState extends State<AddBookDialog> {
         content: Text('Book added successfully', textAlign: TextAlign.center),
       ),
     );
+  }
+
+  void _addNewBook() {
+    BookModel newBook = BookModel(
+      bookName: _bookNameController.text.trim(),
+      bookId: _bookIdController.text.trim(),
+      authorName: _authorNameController.text.trim(),
+      description: _descriptionController.text.trim(),
+      category: selectedCategory?.name ?? '',
+      pages: int.parse(_pagesController.text.trim()),
+      stocks: int.parse(_stocksController.text.trim()),
+      location: _locationController.text.trim(),
+      color: _selectedColor,
+      imageUrls: _images,
+      date: DateTime.now()
+    );
+    context.read<BookBloc>().add(AddBook(newBook));
+  }
+
+  void _updatePrevBook() {
+    BookModel updatedBook = BookModel(
+      uid: widget.bookData!.uid,
+      bookName: _bookNameController.text.trim(),
+      authorName: _authorNameController.text.trim(),
+      bookId: _bookIdController.text.trim(),
+      description: _descriptionController.text.trim(),
+      category: selectedCategory!.name,
+      pages: int.parse(_pagesController.text.trim()),
+      stocks: int.parse(_stocksController.text.trim()),
+      location: _locationController.text.trim(),
+      color: _selectedColor,
+      imageUrls: _images,
+      date: widget.bookData!.date
+    );
+    context.read<BookBloc>().add(EditBook(updatedBook));
   }
 
   void _openColorPickerbook() {
@@ -166,6 +178,12 @@ class _AddBookDialogState extends State<AddBookDialog> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.isUpdate == true) {
+        context.read<BookBloc>().existingImageUrls =
+            widget.bookData!.imageUrls!;
+      }
+       bookBloc = context.watch<BookBloc>();
+      allImageUrls = [...bookBloc.existingImageUrls, ...bookBloc.uploadedUrls];
     return Dialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -240,64 +258,68 @@ class _AddBookDialogState extends State<AddBookDialog> {
                 ),
                 BlocBuilder<BookBloc, BookState>(
                   builder: (context, state) {
-                    List<String> images = [];
+                    if (state is BookImagesSelected) {}
 
-                    if (state is BookImagesSelected) {
-                      images = state.images;
-                    }
-                    if (widget.isUpdate == true) {
-                      return SizedBox(
-                        height: 200,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _images.length,
-                          itemBuilder: (context, index) {
-                            final selectedimage = _images[index];
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ClipRRect(
-                               borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    selectedimage,
-                                    fit: BoxFit.cover,
-                                      width: 110,
-                                  height: 140,
-                                  
-                                  ),
-                                ),
-                              
-                            );
-                          },
-                        ),
-                      );
-                    } else {
-                      return SizedBox(
-                        height: 200,
-                        child:
-                            images.isEmpty
-                                ? const Text('No images selected.')
-                                : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: images.length,
-                                  itemBuilder: (context, index) {
-                                    final selectedimage = images[index];
-                                    return Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ClipRRect(
-                                       
-                                      borderRadius: BorderRadius.circular(10),
-                                        child: Image.network(
+                    return SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: allImageUrls.length,
+                        itemBuilder: (context, index) {
+                          final selectedimage = allImageUrls[index];
+                          return
+                          // Padding(
+                          //   padding: const EdgeInsets.all(8.0),
+                          //   child: ClipRRect(
+                          //     borderRadius: BorderRadius.circular(10),
+                          //     child: Image.network(
+                          //       selectedimage,
+                          //       fit: BoxFit.cover,
+                          //       width: 110,
+                          //       height: 140,
+                          //     ),
+                          //   ),
+                          // );
+                          Stack(
+                            children: [
+                              Image.network(
+                                selectedimage,
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: IconButton(
+                                  icon: Icon(Icons.close, color: Colors.red),
+                                  onPressed: () {
+                                    setState(() {
+                                      final bloc = context.read<BookBloc>();
+
+                                      if (bloc.existingImageUrls.contains(
+                                        selectedimage,
+                                      )) {
+                                        bloc.existingImageUrls.remove(
                                           selectedimage,
-                                          fit: BoxFit.cover,
-                                           width: 110,
-                                        height: 140,
-                                        ),
-                                      ),
-                                    );
+                                        );
+                                      } else if (bloc.uploadedUrls.contains(
+                                        selectedimage,
+                                      )) {
+                                        bloc.uploadedUrls.remove(selectedimage);
+                                      }
+
+                                      // Rebuild UI manually if needed
+                                      (context as Element).markNeedsBuild();
+                                    });
                                   },
                                 ),
-                      );
-                    }
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    );
                   },
                 ),
 
@@ -409,11 +431,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
   }
 }
 
-void showAddBookDialog(
-  BuildContext context,
-  bool isUpdate, {
-  Map<String, dynamic>? book,
-}) {
+void showAddBookDialog(BuildContext context, bool isUpdate, {BookModel? book}) {
   showDialog(
     context: context,
     builder: (BuildContext context) {

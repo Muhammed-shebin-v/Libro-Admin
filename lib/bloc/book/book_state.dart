@@ -12,14 +12,14 @@ class BookLoading extends BookState {
 }
 
 class BookLoaded extends BookState {
-  final List<Map<String, dynamic>> books;
-  final Map<String, dynamic>? selectedBook;
+  final List<BookModel> books;
+  final BookModel? selectedBook;
   
   const BookLoaded(this.books, {this.selectedBook});
   
   BookLoaded copyWith({
-    List<Map<String, dynamic>>? books,
-    Map<String, dynamic>? selectedBook,
+    List<BookModel>? books,
+    BookModel? selectedBook,
   }) {
     return BookLoaded(
       books ?? this.books,
@@ -33,7 +33,7 @@ class BookError extends BookState {
   const BookError(this.message);
 }
 class BookAdded extends BookState {
-  final Book book;
+  final BookModel book;
   const BookAdded(this.book);
 }
 class SortState extends BookState {

@@ -7,6 +7,7 @@ import 'package:gap/gap.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
+import 'package:libro_admin/models/book.dart';
 import 'package:libro_admin/screens/book_details.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/addpop.dart';
@@ -196,10 +197,10 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                               child: ListView.builder(
                                 itemCount: state.books.length,
                                 itemBuilder: (context, index) {
-                                  final book = state.books[index];
+                                  final BookModel book = state.books[index];
                                   bool isSelected =
                                       state.selectedBook != null &&
-                                      state.selectedBook!['uid'] == book['uid'];
+                                      state.selectedBook!.uid == book.uid;
                                   return InkWell(
                                     onTap: () {
                                       context.read<BookBloc>().add(
@@ -238,8 +239,7 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                                                         ),
                                                     image: DecorationImage(
                                                       image: NetworkImage(
-                                                        book['imageUrls'][0] ??
-                                                            'https://bkacontent.com/the-right-blog-images-are-important/',
+                                                        book.imageUrls!.first
                                                       ),
 
                                                       fit: BoxFit.cover,
@@ -251,30 +251,30 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
 
                                             Expanded(
                                               child: Text(
-                                                book['bookName'] ?? 'null',
+                                                book.bookName,
                                               ),
                                             ),
 
                                             Expanded(
                                               child: Text(
-                                                book['bookId'] ?? 'null',
+                                                book.bookId!,
                                               ),
                                             ),
 
                                             Expanded(
                                               child: Text(
-                                                book['authorName'] ?? 'null',
+                                                book.authorName,
                                               ),
                                             ),
 
                                             Expanded(
                                               child: Text(
-                                                book['category'] ?? 'null',
+                                                book.category!,
                                               ),
                                             ),
 
                                             Expanded(
-                                              child: Text(book['pages'].toString(),
+                                              child: Text(book.pages.toString(),
                                               ),
                                             ),
 
@@ -287,17 +287,13 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
                                                       color:
-                                                          book['color'] != null
-                                                              ? Color(
-                                                                book['color'],
-                                                              )
-                                                              : Colors.red,
+                                                          book.color??Colors.red,
                                                       //  Colors.red
                                                     ),
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
-                                                    book['stocks'].toString(),
+                                                    book.currentStock.toString(),
                                                   ),
                                                 ],
                                               ),

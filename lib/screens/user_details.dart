@@ -44,7 +44,7 @@ class UserDetails extends StatelessWidget {
                             children: [
                               const Icon(Icons.notifications),
                               const SizedBox(width: 8),
-                              Text(user['fullName']),
+                              Text(user.userName),
                             ],
                           ),
                           IconButton(
@@ -66,26 +66,25 @@ class UserDetails extends StatelessWidget {
                                 shape: BoxShape.circle,
                               ),
                               child:
-                                  user['imgUrl'] != null
-                                      ? ClipRRect(
+                                 ClipRRect(
                                         borderRadius: BorderRadius.circular(80),
                                         child: Image.network(
-                                          user['imgUrl'],
+                                          user.imgeUrl,
                                           fit: BoxFit.fill,
                                         ),
                                       )
-                                      : null,
+                                  
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              user['username'],
+                              user.userName,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
-                              user['email'],
+                              user.email,
                               style: TextStyle(color: AppColors.grey),
                             ),
                           ],
@@ -130,8 +129,8 @@ class UserDetails extends StatelessWidget {
                           ),
                           Expanded(
                             child: _buildInfoSection('Score', [
-                              InfoItem('May', user['score'].toString()),
-                              InfoItem('Total', user['score'].toString()),
+                              InfoItem('May', user.score.toString()),
+                              InfoItem('Total', user.score.toString()),
                             ]),
                           ),
                         ],
@@ -144,12 +143,12 @@ class UserDetails extends StatelessWidget {
                         children: [
                           Expanded(
                             child: _buildInfoSection('Address', [
-                              InfoItem('', user['address']),
+                              InfoItem('', user.place),
                             ]),
                           ),
                           Expanded(
                             child: _buildInfoSection('Phone', [
-                              InfoItem('', user['phoneNumber']),
+                              InfoItem('', user.phoneNumber),
                             ]),
                           ),
                         ],

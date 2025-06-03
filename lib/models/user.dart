@@ -1,37 +1,58 @@
-class User {
-  final String? uid;
-  final String? username;
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class UserModel {
+  final String uid;
+  final String userName;
   final String email;
-  final String address;
+  final String place;
   final String phoneNumber;
-  final String? fullName;
   final String imgeUrl;
-  User({
-    this.uid,
-    required this.username,
+  final DateTime createdAt;
+  final bool isBlock;
+  final int score;
+  final DateTime subDate;
+  final String subType;
+  final int borrowLimit;
+  UserModel({
+    required this.uid,
+    required this.userName,
     required this.email,
-    required this.address,
+    required this.place,
     required this.phoneNumber,
-    this.fullName,
-    this.imgeUrl = '',
+    required this.createdAt,
+    required this.imgeUrl,
+    required this.isBlock,
+    required this.score,
+    required this.subDate,
+  required this.subType,
+  required this.borrowLimit
+
+
   });
 
-  factory User.fromMap(Map<String, dynamic> data) {
-    return User(
+  factory UserModel.fromMap(Map<String, dynamic> data) {
+    return UserModel(
       uid: data['uid'] ?? '',
-      username: data['username'] ?? '',
+      userName: data['userName'] ?? '',
       email: data['email'] ?? '',
-      address: data['address'] ?? '',
+      place: data['place'] ?? '',
       phoneNumber: data['phoneNumber'] ?? '',
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      imgeUrl: data['imgUrl'],
+      isBlock: data['isBlock'],
+      score: data['score'],
+      subDate:( data['subDate'] as Timestamp).toDate(),
+      subType: data['subType']??'',
+      borrowLimit: data['borrwLimit']??0
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
-      'username': username,
+      'username': userName,
       'email': email,
-      'address': address,
+      'address': place,
       'phoneNumber': phoneNumber,
     };
   }
