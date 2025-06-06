@@ -5,12 +5,14 @@ class BookForm extends StatelessWidget {
   final TextEditingController controller;
   final String? validation;
   final int? maxLines;
+  final int? maxLength;
   const BookForm({
     super.key,
     required this.hint,
     required this.controller,
     this.maxLines,
-    this.validation
+    this.validation,
+    this.maxLength
   });
 
   @override
@@ -22,7 +24,7 @@ class BookForm extends StatelessWidget {
         }
         return null;
       },
-
+      maxLength: maxLength,
       maxLines: maxLines,
       controller: controller,
       decoration: InputDecoration(

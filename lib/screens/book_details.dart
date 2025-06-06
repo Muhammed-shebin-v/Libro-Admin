@@ -221,7 +221,7 @@ class BookDetailsWidget extends StatelessWidget {
                     ),
                     Gap(10),
                     Container(
-                      height: 200,
+                      height: 160,
                       decoration: BoxDecoration(
                         color: AppColors.color60,
                         border: Border.all(),

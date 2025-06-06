@@ -288,13 +288,10 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                                                       shape: BoxShape.circle,
                                                       color:
                                                           book.color??Colors.red,
-                                                      //  Colors.red
                                                     ),
                                                   ),
                                                   const SizedBox(width: 4),
-                                                  Text(
-                                                    book.currentStock.toString(),
-                                                  ),
+                                                  Text('${book.currentStock}/${book.stocks}'),
                                                 ],
                                               ),
                                             ),

@@ -414,6 +414,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
                   hint: 'Description',
                   controller: _descriptionController,
                   maxLines: 4,
+                  maxLength: 200,
                 ),
                 BookForm(hint: 'Location', controller: _locationController),
                 CustomLongButton(
