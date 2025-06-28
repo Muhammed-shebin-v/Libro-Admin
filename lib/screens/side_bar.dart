@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:libro_admin/screens/return_request_list.dart';
 import 'package:libro_admin/screens/users_list.dart';
 import 'package:libro_admin/screens/books_list.dart';
 import 'package:libro_admin/screens/ad_screen.dart';
@@ -88,6 +89,12 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
           child: AdminBorrowedBooksScreen(),
         );
         break;
+         case 'Return Requests':
+        nextScreen = LibroWebLayout(
+          currentScreen: 'Return Requests',
+          child: ReturnRequestList(),
+        );
+        break;
       default:
         nextScreen = LibroWebLayout(
           currentScreen: 'DashBoard',
@@ -104,6 +111,7 @@ class _LibroWebLayoutState extends State<LibroWebLayout> {
     {'title': 'Books', 'icon': Icons.book},
     {'title': 'AD', 'icon': Icons.newspaper},
     {'title': 'Borrowed Books', 'icon': Icons.bookmark},
+    {'title':'Return Requests','icon':Icons.replay}
   ];
 
   @override

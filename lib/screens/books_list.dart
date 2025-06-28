@@ -1,6 +1,6 @@
-
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -11,32 +11,59 @@ import 'package:libro_admin/models/book.dart';
 import 'package:libro_admin/screens/book_details.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/addpop.dart';
+import 'package:libro_admin/widgets/category_button.dart';
 import 'package:libro_admin/widgets/filter.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
+import 'package:libro_admin/widgets/sort_button.dart';
 
 class LibraryManagementScreen extends StatefulWidget {
   const LibraryManagementScreen({super.key});
 
   @override
-  State<LibraryManagementScreen> createState() => _LibraryManagementScreenState();
+  State<LibraryManagementScreen> createState() =>
+      _LibraryManagementScreenState();
 }
 
 class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
   String? _selectedSort;
-  final List<String> _sortOptions = ['Alphabetical', 'Latest'];
+
+  String? _selectedCategory;
+
+  List<String> _categoryOptions = [];
+
   final FilterController filterController1 = FilterController([
     'All',
     'Borrowed',
     'Out of Stock',
   ]);
+
   final TextEditingController searchController = TextEditingController();
+
+  Future<void> fetchCategoryNames() async {
+    try {
+      final catSnap =
+          await FirebaseFirestore.instance.collection('categories').get();
+
+      List<String> categoryNames =
+          catSnap.docs.map((doc) => doc.data()['name'] as String).toList();
+
+      _categoryOptions = categoryNames;
+    } catch (e) {
+      log('Error fetching category names: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategoryNames();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.color60,
-      body:
-      Row(
+      body: Row(
         children: [
           Expanded(
             flex: 4,
@@ -49,7 +76,7 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                     context.read<BookBloc>().add(SearchBooks(query));
                   },
                 ),
-              
+
                 Row(
                   children: [
                     const Text(
@@ -74,58 +101,33 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                     ),
                     const SizedBox(width: 8),
 
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder:
-                        //         (context) => const AllCategoriesScreen(),
-                        //   ),
-                        // );
-                        context.read<BookBloc>().add(
-                          LoadBooksByCategory('tech'),
+                    BlocBuilder<BookBloc, BookState>(
+                      builder: (context, state) {
+                        return CustomCategoryDropdown(
+                          selectedCategory:
+                              _selectedCategory, // Assuming your state has this property
+                          categoryOptions:
+                              _categoryOptions, // Your list of category options
+                          onCategoryChanged: (String newValue) {
+                            context.read<BookBloc>().add(
+                              FilterBooksByCategory(newValue),
+                            );
+                          },
                         );
                       },
-                      icon: const Icon(Icons.filter_list),
-                      label: const Text('Categories'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade200,
-                        foregroundColor: Colors.black,
-                      ),
                     ),
                     Gap(5),
-                    Container(
-                      height: 30,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: BlocBuilder<BookBloc, BookState>(
-                        builder: (context, state) {
-                          return DropdownButton<String>(
-                            underline: const SizedBox(),
-                            hint: Text(_selectedSort ?? 'Sort by'),
-                            value: _selectedSort,
-                            // value: ,
-                            items:
-                                _sortOptions.map((String option) {
-                                  return DropdownMenuItem<String>(
-                                    value: option,
-                                    child: Text(option),
-                                  );
-                                }).toList(),
-                            onChanged: (String? newValue) {
-                              if (newValue != null) {
-                                _selectedSort = newValue;
-                                context.read<BookBloc>().add(
-                                  SortChanged(newValue),
-                                );
-                              }
-                            },
-                          );
-                        },
-                      ),
+
+                    BlocBuilder<BookBloc, BookState>(
+                      builder: (context, state) {
+                        return CustomSortDropdown(
+                          selectedSort: _selectedSort,
+                          onSortChanged: (String newValue) {
+                            _selectedSort = newValue;
+                            context.read<BookBloc>().add(SortChanged(newValue));
+                          },
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -239,7 +241,7 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                                                         ),
                                                     image: DecorationImage(
                                                       image: NetworkImage(
-                                                        book.imageUrls!.first
+                                                        book.imageUrls!.first,
                                                       ),
 
                                                       fit: BoxFit.cover,
@@ -250,31 +252,22 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                                             ),
 
                                             Expanded(
-                                              child: Text(
-                                                book.bookName,
-                                              ),
+                                              child: Text(book.bookName),
+                                            ),
+
+                                            Expanded(child: Text(book.bookId!)),
+
+                                            Expanded(
+                                              child: Text(book.authorName),
+                                            ),
+
+                                            Expanded(
+                                              child: Text(book.category!),
                                             ),
 
                                             Expanded(
                                               child: Text(
-                                                book.bookId!,
-                                              ),
-                                            ),
-
-                                            Expanded(
-                                              child: Text(
-                                                book.authorName,
-                                              ),
-                                            ),
-
-                                            Expanded(
-                                              child: Text(
-                                                book.category!,
-                                              ),
-                                            ),
-
-                                            Expanded(
-                                              child: Text(book.pages.toString(),
+                                                book.pages.toString(),
                                               ),
                                             ),
 
@@ -287,11 +280,14 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
                                                     decoration: BoxDecoration(
                                                       shape: BoxShape.circle,
                                                       color:
-                                                          book.color??Colors.red,
+                                                          book.color ??
+                                                          Colors.red,
                                                     ),
                                                   ),
                                                   const SizedBox(width: 4),
-                                                  Text('${book.currentStock}/${book.stocks}'),
+                                                  Text(
+                                                    '${book.currentStock}/${book.stocks}',
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -314,10 +310,8 @@ class _LibraryManagementScreenState extends State<LibraryManagementScreen> {
               ],
             ),
           ),
-   
-              BookDetailsWidget(),
-             
-          
+
+          BookDetailsWidget(),
         ],
       ),
     );

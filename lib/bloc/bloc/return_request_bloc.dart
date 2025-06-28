@@ -1,20 +1,27 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_event.dart';
-import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_state.dart';
+import 'package:libro_admin/bloc/bloc/return_request_event.dart';
+import 'package:libro_admin/bloc/bloc/return_request_state.dart';
 import 'package:libro_admin/models/borrowed_book.dart';
 
-class BorrowedBooksBloc extends Bloc<BorrowedBooksEvent, BorrowedBooksState> {
-  BorrowedBooksBloc() : super(BorrowedBooksInitial()) {
-    on<LoadBorrowedBooks>((event, emit) async {
-      emit(BorrowedBooksLoading());
+class ReturnRequestedBooksBloc extends Bloc<ReturnRequestEvent, ReturnRequestState> {
+  ReturnRequestedBooksBloc() : super(ReturnRequestedBooksInitial()) {
+    on<LoadReturnRequestedBooks>((event, emit) async {
+      emit(ReturnRequestedBooksLoading());
       try {
-        final borrowSnapshots = await FirebaseFirestore.instance.collection('borrows').get();
+        final borrowSnapshots = await FirebaseFirestore.instance
+    .collection('borrows')
+    .where('status',whereIn: ['requested', 'payed'])
+    .get();
+
 
         List<BorrowedBookModel> borrowDetails = [];
 
         for (var doc in borrowSnapshots.docs) {
-         
+         final borrowId=doc.id;
+         log(borrowId);
           final userSnap =
               await FirebaseFirestore.instance
                   .collection('users')
@@ -32,13 +39,14 @@ class BorrowedBooksBloc extends Bloc<BorrowedBooksEvent, BorrowedBooksState> {
           if (user != null && book != null) {
             borrowDetails.add(
               BorrowedBookModel(
-                userId:  user['uid']??'',
+                userId: user['uid'],
                 userName: user['userName'] ?? '',
                 userImage: user['imgUrl'] ?? '',
-                bookId: book['uid']??'',
+                bookId:  book['uid'],
                 bookName: book['bookName'] ?? '',
                 bookImage: book['imageUrls'][0] ?? '',
-                borrowId: doc.id,
+                // borrowId: doc.data()['uid'],
+                borrowId:  borrowId,
                 borrowDate:(doc.data()['borrowDate'] as Timestamp).toDate(),
                 returnDate: (doc.data()['returnDate'] as Timestamp).toDate(),
                 fine: doc.data()['fine'] ?? 0,
@@ -47,9 +55,9 @@ class BorrowedBooksBloc extends Bloc<BorrowedBooksEvent, BorrowedBooksState> {
             );
           }
         }
-        emit(BorrowedBooksLoaded(borrowDetails));
+        emit(ReturnRequestedBooksLoaded(borrowDetails));
       } catch (e) {
-        emit(BorrowedBooksError('Failed to load borrowed books: $e'));
+        emit(ReturnRequestedBooksError('Failed to load borrowed books: $e'));
       }
     });
   }

@@ -4,10 +4,12 @@ import 'package:gap/gap.dart';
 import 'package:libro_admin/bloc/user/users_bloc.dart';
 import 'package:libro_admin/bloc/user/users_event.dart';
 import 'package:libro_admin/bloc/user/users_state.dart';
+import 'package:libro_admin/db/const.dart';
 import 'package:libro_admin/screens/user_details.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/filter.dart';
 import 'package:libro_admin/widgets/search_bar.dart';
+import 'package:libro_admin/widgets/sort_button.dart';
 
 class UserManagementScreen extends StatefulWidget {
   const UserManagementScreen({super.key});
@@ -25,8 +27,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     'Non-Fiction',
     'Science',
   ]);
-    String? _selectedSort;
-  final List<String> _sortOptions = ['Alphabetical', 'Latest'];
+  String? _selectedSort;
 
   @override
   Widget build(BuildContext context) {
@@ -59,37 +60,19 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                       ),
                       Row(
                         children: [
-                          Container(
-                      height: 30,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: BlocBuilder<UserBloc, UserState>(
-                        builder: (context, state) {
-                          return DropdownButton<String>(
-                            underline: const SizedBox(),
-                            hint: Text(_selectedSort ?? 'Sort by'),
-                            value: _selectedSort,
-                            items:
-                                _sortOptions.map((String option) {
-                                  return DropdownMenuItem<String>(
-                                    value: option,
-                                    child: Text(option),
+                          BlocBuilder<UserBloc, UserState>(
+                            builder: (context, state) {
+                              return CustomSortDropdown(
+                                selectedSort: _selectedSort,
+                                onSortChanged: (String newValue) {
+                                  _selectedSort=newValue;
+                                  context.read<UserBloc>().add(
+                                    SortChanged(newValue),
                                   );
-                                }).toList(),
-                            onChanged: (String? newValue) {
-                              if (newValue != null) {
-                                _selectedSort = newValue;
-                                context.read<UserBloc>().add(
-                                  SortChanged(newValue),
-                                );
-                              }
+                                },
+                              );
                             },
-                          );
-                        },
-                      ),
-                    ),
+                          ),
                           const SizedBox(width: 8),
                           ElevatedButton.icon(
                             icon: const Icon(Icons.filter_alt),
@@ -184,11 +167,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                                 child: ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(80),
-                                                  child:
-                                                     Image.network(
-                                                            user.imgeUrl,
-                                                            fit: BoxFit.fill,
-                                                          ),
+                                                  child: Image.network(
+                                                    user.imgeUrl,
+                                                    fit: BoxFit.fill,
+                                                  ),
                                                 ),
                                               ),
                                               const SizedBox(width: 8),
@@ -202,9 +184,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                         ),
                                         Expanded(child: Text(user.email)),
                                         Expanded(child: Text(user.place)),
-                                        Expanded(
-                                          child: Text(user.phoneNumber),
-                                        ),
+                                        Expanded(child: Text(user.phoneNumber)),
                                         Expanded(
                                           child: Row(
                                             children: [
@@ -217,9 +197,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                                                 ),
                                               ),
                                               const SizedBox(width: 6),
-                                              Text(
-                                                    user.isBlock.toString(),
-                                                  ),
+                                              Text(user.isBlock.toString()),
                                             ],
                                           ),
                                         ),

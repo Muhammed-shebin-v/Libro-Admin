@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:libro_admin/bloc/searchUsers/search_users_bloc.dart';
+import 'package:libro_admin/bloc/bloc/return_request_bloc.dart';
+import 'package:libro_admin/bloc/bloc/return_request_event.dart';
 import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_bloc.dart';
 import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_event.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
@@ -24,6 +28,7 @@ void main() async {
         BlocProvider(create: (context) => BookBloc()..add(LoadBooks())),
         BlocProvider(create: (_) => CategoryBloc(FirebaseFirestore.instance)..add(LoadCategories())),
         BlocProvider(create: (_) => BorrowedBooksBloc()..add(LoadBorrowedBooks())),
+        BlocProvider(create: (context) => ReturnRequestedBooksBloc()..add(LoadReturnRequestedBooks()),)
       ],
       child: LibroAdmin(),
     ),
@@ -35,6 +40,9 @@ class LibroAdmin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen(),);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false, home: SplashScreen(),);
   }
+  
 }
+

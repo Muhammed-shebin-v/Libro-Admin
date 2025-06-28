@@ -26,9 +26,10 @@ class BookForm extends StatelessWidget {
       },
       maxLength: maxLength,
       maxLines: maxLines,
+      
       controller: controller,
       decoration: InputDecoration(
-        hintText: hint,
+        label:Text(hint) ,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,

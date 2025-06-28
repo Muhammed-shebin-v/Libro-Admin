@@ -32,9 +32,22 @@ class AddBook extends BookEvent {
 class LoadBooksAlphabetical extends BookEvent {
   const LoadBooksAlphabetical();
 }
+class LoadBooksAlphabeticalDesc extends BookEvent {
+  const LoadBooksAlphabeticalDesc();
+}
+
 class LoadBooksLatest extends BookEvent {
   const LoadBooksLatest();
 }
+class LoadBooksOldest extends BookEvent {
+  const LoadBooksOldest();
+}
+class FilterBooksByCategory extends BookEvent{
+  final String categoryName;
+  const FilterBooksByCategory(this.categoryName);
+}
+
+
 class SortChanged extends BookEvent {
   final String newSort;
   SortChanged(this.newSort);
@@ -43,10 +56,6 @@ class PickImagesEvent extends BookEvent {}
 class UploadBookEvent extends BookEvent {
   final String title;
   UploadBookEvent(this.title);
-}
-class LoadBooksByCategory extends BookEvent {
-  final String categoryName;
-  LoadBooksByCategory(this.categoryName);
 }
 class SearchBooks extends BookEvent {
   final String query;

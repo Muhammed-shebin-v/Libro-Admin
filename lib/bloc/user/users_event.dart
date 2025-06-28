@@ -21,6 +21,16 @@ class LoadUsersAlphabetical extends UserEvent {
 class LoadUsersLatest extends UserEvent {
   const LoadUsersLatest();
 }
+
+
+class LoadUsersAlphabeticalDesc extends UserEvent {
+  const LoadUsersAlphabeticalDesc();
+}
+
+class LoadUsersOldest extends UserEvent {
+  const LoadUsersOldest();
+}
+
 class SortChanged extends UserEvent {
   final String newSort;
   SortChanged(this.newSort);

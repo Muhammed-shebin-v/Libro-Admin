@@ -1,11 +1,7 @@
-import 'dart:developer';
-
-import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gap/gap.dart';
-import 'package:get/get_utils/src/extensions/export.dart';
 import 'package:libro_admin/bloc/book/book_bloc.dart';
 import 'package:libro_admin/bloc/book/book_event.dart';
 import 'package:libro_admin/bloc/book/book_state.dart';
@@ -75,7 +71,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
   final _pagesController = TextEditingController();
   final _stocksController = TextEditingController();
   final _locationController = TextEditingController();
-  final db = DataBaseService();
+  // final _bookService = BookService();
   final _formKey = GlobalKey<FormState>();
   List<String> _images = [];
   List<String> allImageUrls = [];
@@ -285,7 +281,7 @@ class _AddBookDialogState extends State<AddBookDialog> {
                               Image.network(
                                 selectedimage,
                                 width: 100,
-                                height: 100,
+                                height: 140,
                                 fit: BoxFit.cover,
                               ),
                               Positioned(

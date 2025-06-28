@@ -3,20 +3,24 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:libro_admin/bloc/user/users_event.dart';
 import 'package:libro_admin/bloc/user/users_state.dart';
+import 'package:libro_admin/db/user.dart';
 import 'package:libro_admin/models/user.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   final CollectionReference usersRef = FirebaseFirestore.instance.collection(
     'users',
   );
+  final _userService=UserService();
 
   UserBloc() : super(UserInitial()) {
     on<FetchUsers>(_onFetchUsers);
     on<SelectUser>(_onSelectUser);
     on<SearchUsers>(_onSearchUsers);
     on<SortChanged>(_sortchanged);
-    on<LoadUsersAlphabetical>(_loadAlphabetical);
-    on<LoadUsersLatest>(_loadLatest);
+    on<LoadUsersAlphabetical>(_loadUsersAlphabetical);
+    on<LoadUsersAlphabeticalDesc>(_loadUsersAlphabeticalDesc);
+    on<LoadUsersLatest>(_loadUsersLatest);
+    on<LoadUsersOldest>(_loadUsersOldest);
   }
 
 
@@ -66,50 +70,71 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(UserError('Error searching books: $e'));
     }
   }
-  Future<void> _loadAlphabetical(
-    LoadUsersAlphabetical event,
-    Emitter<UserState> emit,
-  ) async {
+   Future<void> _loadUsersAlphabetical(
+      LoadUsersAlphabetical event, Emitter<UserState> emit) async {
     emit(UserLoading());
     try {
-      final snapshot =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .orderBy('userName')
-              .get();
-
-      final books = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
-      emit(UserLoaded(books));
+      final users = await _userService.fetchUsersAlphabetically();
+      emit(UserLoaded(users));
     } catch (e) {
-      emit(UserError('Failed to load books'));
+      emit(UserError('Failed to load users: $e'));
     }
   }
 
-  Future<void> _loadLatest(
-    LoadUsersLatest event,
-    Emitter<UserState> emit,
-  ) async {
+  Future<void> _loadUsersAlphabeticalDesc(
+      LoadUsersAlphabeticalDesc event, Emitter<UserState> emit) async {
     emit(UserLoading());
     try {
-      final snapshot =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .orderBy('createdAt', descending: true)
-              .get();
-
-      final books = snapshot.docs.map((doc) => UserModel.fromMap(doc.data())).toList();
-      emit(UserLoaded(books));
+      final users = await _userService.fetchUsersAlphabeticallyDesc();
+      emit(UserLoaded(users));
     } catch (e) {
-      emit(UserError('Failed to load books'));
+      emit(UserError('Failed to load users: $e'));
     }
   }
 
-  Future<void> _sortchanged(SortChanged event, Emitter<UserState> emit) async {
+  Future<void> _loadUsersLatest(
+      LoadUsersLatest event, Emitter<UserState> emit) async {
+    emit(UserLoading());
+    try {
+      final users = await _userService.fetchLatestUsers();
+      emit(UserLoaded(users));
+    } catch (e) {
+      emit(UserError('Failed to load users: $e'));
+    }
+  }
+
+  Future<void> _loadUsersOldest(
+      LoadUsersOldest event, Emitter<UserState> emit) async {
+    emit(UserLoading());
+    try {
+      final users = await _userService.fetchOldestUsers();
+      emit(UserLoaded(users));
+    } catch (e) {
+      emit(UserError('Failed to load users: $e'));
+    }
+  }
+
+
+
+  Future<void> _sortchanged(
+    SortChanged event,
+    Emitter<UserState> emit,
+  ) async {
     emit(SortState(event.newSort));
-    if (event.newSort == 'Alphabetical') {
-      add(LoadUsersAlphabetical());
-    } else if (event.newSort == 'Latest') {
-      add(LoadUsersLatest());
+
+    switch (event.newSort) {
+      case 'Alphabetical ↑':
+        add(LoadUsersAlphabetical());
+        break;
+      case 'Alphabetical ↓':
+        add(LoadUsersAlphabeticalDesc());
+        break;
+      case 'Latest':
+        add(LoadUsersLatest());
+        break;
+      case 'Oldest':
+        add(LoadUsersOldest());
+        break;
     }
   }
 
