@@ -13,6 +13,7 @@ class UserModel {
   final DateTime subDate;
   final String subType;
   final int borrowLimit;
+   String? fcmToken;
   UserModel({
     required this.uid,
     required this.userName,
@@ -25,7 +26,8 @@ class UserModel {
     required this.score,
     required this.subDate,
   required this.subType,
-  required this.borrowLimit
+  required this.borrowLimit,
+  this.fcmToken,
 
 
   });
@@ -43,7 +45,8 @@ class UserModel {
       score: data['score'],
       subDate:( data['subDate'] as Timestamp).toDate(),
       subType: data['subType']??'',
-      borrowLimit: data['borrwLimit']??0
+      borrowLimit: data['borrowLimit']??0,
+      fcmToken: data['fcmToken']??'',
     );
   }
 

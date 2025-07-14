@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:libro_admin/screens/home.dart';
-import 'package:libro_admin/screens/side_bar.dart';
+import 'package:libro_admin/widgets/side_bar.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/form.dart';
 import 'package:libro_admin/widgets/long_button.dart';
@@ -75,7 +75,6 @@ class LoginScreen extends StatelessWidget {
                         const Gap(50),
                         CustomForm(
                           title: 'Email',
-                          hint: 'enter email',
                           controller: _emailController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -89,9 +88,8 @@ class LoginScreen extends StatelessWidget {
                           },
                         ),
                         CustomForm(
-                          isPassword: true,
+                          obsecure: true,
                           title: 'Password',
-                          hint: 'enter password',
                           controller: _passwordController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {

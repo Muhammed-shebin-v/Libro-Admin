@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:libro_admin/models/book.dart';
+import 'package:libro_admin/models/review_model.dart';
 
 
 class BookService {
@@ -110,7 +111,24 @@ Future<List<BookModel>> fetchOldestBooks() async {
     rethrow;
   }
 }
-
+Future<List<ReviewModel>> fetchReviews(String bookId) async {
+    try {
+      log(bookId);
+      final snapshot =
+          await FirebaseFirestore.instance
+              .collection('books')
+              .doc(bookId)
+              .collection('reviews')
+              .get();
+      log("Number of reviews: ${snapshot.docs.length}");
+      final reviews =
+          snapshot.docs.map((doc) => ReviewModel.fromMap(doc.data())).toList();
+      return reviews;
+    } catch (e) {
+      log('error in loading reviews :$e');
+      rethrow;
+    }
+  }
 
   Future<List<BookModel>> filterBooksByCategory(String category) async {
     try {

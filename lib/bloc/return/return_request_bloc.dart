@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:libro_admin/bloc/bloc/return_request_event.dart';
-import 'package:libro_admin/bloc/bloc/return_request_state.dart';
+import 'package:libro_admin/bloc/return/return_request_event.dart';
+import 'package:libro_admin/bloc/return/return_request_state.dart';
 import 'package:libro_admin/models/borrowed_book.dart';
 
 class ReturnRequestedBooksBloc extends Bloc<ReturnRequestEvent, ReturnRequestState> {

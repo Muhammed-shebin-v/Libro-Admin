@@ -19,7 +19,8 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
   int bookcount=0;
   int usercount=0;
   int borrowscount=0;
-  
+  // ------
+  // ------
 
   @override
   void initState() {
@@ -29,6 +30,8 @@ class _DashboardPageState extends State<DashboardPage> with SingleTickerProvider
       duration: const Duration(milliseconds: 300),
     );
     _initializeBookCount();
+    // ------
+  // ------
 
   }
 

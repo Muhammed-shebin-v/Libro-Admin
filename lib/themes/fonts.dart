@@ -16,6 +16,10 @@ class AppFonts {
     fontSize: 20,
     fontWeight: FontWeight.w500,
   );
+   static  TextStyle heading4 = GoogleFonts.k2d(
+    fontSize:16,
+    fontWeight: FontWeight.bold,
+  );
 
   static  TextStyle body1 = GoogleFonts.k2d(fontSize: 18);
 
@@ -29,5 +33,6 @@ class AppColors{
   static const Color grey=Color.fromARGB(255, 224, 222, 222);
   static const Color white=Colors.white;
   static const Color black=Colors.black;
+  static const Color green=Colors.green;
 }
 

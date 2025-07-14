@@ -8,17 +8,18 @@ class CustomCategoryDropdown extends StatelessWidget {
   final Color borderColor;
 
   const CustomCategoryDropdown({
-    Key? key,
+    super.key,
     required this.selectedCategory,
     required this.categoryOptions,
     required this.onCategoryChanged,
     this.borderColor = Colors.grey,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 30,
+      padding: EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
         border: Border.all(color: borderColor),
         borderRadius: BorderRadius.circular(8),

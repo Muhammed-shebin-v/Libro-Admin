@@ -4,7 +4,6 @@ import 'package:gap/gap.dart';
 import 'package:libro_admin/bloc/user/users_bloc.dart';
 import 'package:libro_admin/bloc/user/users_event.dart';
 import 'package:libro_admin/bloc/user/users_state.dart';
-import 'package:libro_admin/db/const.dart';
 import 'package:libro_admin/screens/user_details.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/filter.dart';
@@ -89,10 +88,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                   ),
 
                   const Gap(10),
-                  FilterButton(
-                    filters: filterController2.filters,
-                    controller: filterController2,
-                  ),
+                  // FilterButton(
+                  //   filters: filterController2.filters,
+                  //   controller: filterController2,
+                  // ),
                   const Divider(),
 
                   Container(
@@ -115,7 +114,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                         _buildTableHeader('ID', flex: 2),
                         _buildTableHeader('Email'),
                         _buildTableHeader('Place'),
-                        _buildTableHeader('M.type'),
+                        // _buildTableHeader('M.type'),
                         _buildTableHeader('Block'),
                       ],
                     ),

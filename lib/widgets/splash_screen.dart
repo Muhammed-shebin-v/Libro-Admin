@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:libro_admin/screens/home.dart';
 import 'package:libro_admin/screens/home_screen.dart';
 import 'package:libro_admin/screens/login_screen.dart';
-import 'package:libro_admin/screens/side_bar.dart';
+import 'package:libro_admin/widgets/side_bar.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
