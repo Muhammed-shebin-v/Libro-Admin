@@ -8,7 +8,6 @@ import 'package:libro_admin/bloc/book/book_state.dart';
 import 'package:libro_admin/bloc/category/categories_bloc.dart';
 import 'package:libro_admin/bloc/category/categories_event.dart';
 import 'package:libro_admin/bloc/category/categories_state.dart';
-import 'package:libro_admin/db/book.dart';
 import 'package:libro_admin/models/book.dart';
 import 'package:libro_admin/models/category.dart';
 import 'package:libro_admin/themes/fonts.dart';

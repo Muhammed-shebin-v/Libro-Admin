@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_bloc.dart';
 import 'package:libro_admin/bloc/borrowedBooks/borrowed_books_dart_state.dart';
 import 'package:libro_admin/themes/fonts.dart';
-import 'package:libro_admin/widgets/search_bar.dart';
+
 
 class AdminBorrowedBooksScreen extends StatelessWidget {
   AdminBorrowedBooksScreen({super.key});
@@ -113,12 +113,13 @@ class AdminBorrowedBooksScreen extends StatelessWidget {
                                   Expanded(child: Text(book.bookName)),
                                   Expanded(
                                     child: Text(
-                                      "📆 ${DateFormat('dd-MM-yyyy').format(DateTime.parse(book.borrowDate.toString()))}",
+                                     
+                                      "📆 ${ DateFormat('d MMM yyyy').format(DateTime.parse(book.borrowDate.toString()))}",
                                     ),
                                   ),
                                   Expanded(
                                     child: Text(
-                                      "📆 ${DateFormat('dd-MM-yyyy').format(DateTime.parse(book.returnDate.toString()))}",
+                                      "📆 ${DateFormat('d MMM yyyy').format(DateTime.parse(book.returnDate.toString()))}",
                                     ),
                                   ),
                                   Expanded(child: Text('₹ ${book.fine.toString()}')),

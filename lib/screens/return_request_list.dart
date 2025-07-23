@@ -106,12 +106,12 @@ class ReturnRequestList extends StatelessWidget {
                                   Expanded(child: Text(book.bookName)),
                                   Expanded(
                                     child: Text(
-                                      "📆 ${DateFormat('dd-MM-yyyy').format(DateTime.parse(book.borrowDate.toString()))}",
+                                      "📆 ${DateFormat('d MMM yyyy').format(DateTime.parse(book.borrowDate.toString()))}",
                                     ),
                                   ),
                                   Expanded(
                                     child: Text(
-                                      "📆 ${DateFormat('dd-MM-yyyy').format(DateTime.parse(book.returnDate.toString()))}",
+                                      "📆 ${DateFormat('d MMM yyyy').format(DateTime.parse(book.returnDate.toString()))}",
                                     ),
                                   ),
                                   Expanded(child: Text('₹ ${book.fine.toString()}')),

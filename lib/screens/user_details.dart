@@ -7,7 +7,6 @@ import 'package:libro_admin/bloc/user/users_bloc.dart';
 import 'package:libro_admin/bloc/user/users_state.dart';
 import 'package:libro_admin/themes/fonts.dart';
 import 'package:libro_admin/widgets/chatScreen.dart';
-import 'package:libro_admin/widgets/long_button.dart';
 
 class UserDetails extends StatelessWidget {
   UserDetails({super.key});
@@ -105,7 +104,7 @@ class UserDetails extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Chatscreen(userId: user.uid),
+                                    builder: (context) => Chatscreen(userId: user.uid,userName: user.userName),
                                   ),
                                 );
                               },
